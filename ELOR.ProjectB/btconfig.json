@@ -1,0 +1,12 @@
+{
+  "DBURL": "127.0.0.1",
+  "DBLogin": "root",
+  "DBPass": "76543210",
+  "DBName": "projectb",
+  "FirstUserLogin": "god",
+  "FirstUserName": "Moderator",
+  "FirstUserLastName": "Moderator #1",
+  "FirstUserPassword": "$H0u1D_Ch@n63",
+  "PasswordSalt": "pepper",
+  "BrancaKey": "c43cb0d880e3bfd85468f4aa1d89e061"
+}
