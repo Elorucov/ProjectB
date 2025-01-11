@@ -1,6 +1,8 @@
 ﻿using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.API.DTO;
 using ELOR.ProjectB.Core;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.Xml.Linq;
 
 namespace ELOR.ProjectB.API.Methods {
     public static class APIExtensions {
@@ -41,6 +43,25 @@ namespace ELOR.ProjectB.API.Methods {
             } else {
                 return new APIError(1, "Internal server error: " + ex.Message);
             }
+        }
+
+        public static string ValidateAndGetValue(this HttpRequest request, string paramName) {
+            if (!request.TryGetParameter(paramName, out string value)) throw new InvalidParameterException($"{paramName} is missing");
+            if (string.IsNullOrWhiteSpace(value)) throw new InvalidParameterException($"{paramName} is empty");
+            return value;
+        }
+
+        public static string ValidateAndGetValue(this HttpRequest request, string paramName, int min, int max = 255) {
+            string value = request.ValidateAndGetValue(paramName);
+            if (value.Length < 2) throw new InvalidParameterException($"{paramName} length must be greater than {min}");
+            if (value.Length > 64) throw new InvalidParameterException($"{paramName} length must be less than {max}");
+            return value;
+        }
+
+        public static uint ValidateAndGetUIntValue(this HttpRequest request, string paramName) {
+            if (!request.TryGetParameter(paramName, out string valueStr)) throw new InvalidParameterException($"{paramName} is missing");
+            if (!uint.TryParse(valueStr, out uint value) || value == 0) throw new InvalidParameterException($"{paramName} is invalid (must be uint and non-zero)");
+            return value;
         }
     }
 }

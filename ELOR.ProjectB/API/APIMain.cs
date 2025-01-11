@@ -21,15 +21,20 @@ namespace ELOR.ProjectB.API {
             app.Map("/invites.create", InvitesAPI.CreateAsync);
 
             app.Map("/products.create", ProductsAPI.CreateAsync);
+            app.Map("/products.get", ProductsAPI.GetAsync);
             app.Map("/products.setAsFinished", ProductsAPI.SetAsFinishedAsync);
 
-            app.Map("/server.test", () => Results.Json(new APIResponse<bool>(true)));
+            app.Map("/reports.create", ReportsAPI.CreateAsync);
+
+            app.Map("/server.getInfo", SendInfo);
             app.Map("/server.init", InitDBAsync);
 
             app.Map("/{method}", () => {
                 throw new UnknownMethodException();
             });
-            app.Map("/", SendInfo);
+            app.Map("/", () => {
+                throw new UnknownMethodException();
+            });
         }
 
         static IResult SendInfo(HttpRequest request) {

@@ -40,7 +40,6 @@
     public class ServerInfo {
         public int Version { get; set; }
         public uint? AuthorizedMemberId { get; set; }
-        public List<string> Rights { get; set; }
         public string AuthErrorReason { get; set; }
     }
 

@@ -1,0 +1,122 @@
+# ProjectB API Reference
+
+The API methods named in the `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method). The server returns responses in JSON format and contains a `response` field in case of success, or an `error` field in case of error.
+
+Example of a successful response:
+```
+{
+  "response": {
+    "memberId": 5,
+    "login": "bob"
+  }
+}
+```
+
+Example of an error response:
+```
+{
+  "error": {
+    "code": 16,
+    "message": "Permission to perform this action is denied: you are not an owner"
+  }
+}
+```
+
+The client must send the `Authorization: Bearer <access_token>` header to any methods except the `auth` section. Without this header, the server will return a error (code `5`). `access_token` can be obtained by calling the `auth.signIn` method.
+
+## API methods
+ProjectB has API methods described below. Please note: parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
+
+### auth.signIn
+This method authorizes the member. 
+
+#### Parameters
+| Name        | Type    | Description                  | 
+|-------------|---------|------------------------------|
+| `login` *   | `string`| Member's user name           |
+| `password`* | `string`| Password                     |
+
+#### Response
+An object with fields:
+| Name          | Type     | Description                                                                     | 
+|---------------|----------|---------------------------------------------------------------------------------|
+| `memberId`    | `uint32` | Authorized member's ID                                                          |
+| `accessToken` | `string` | An access token that must be sent to API methods in the `Authorization` header  |
+| `expiresIn`   | `uint32` | Token lifetime in seconds                                                       |
+
+### auth.signUp
+This method registers a new member in bug tracker via invite code.
+
+#### Parameters
+| Name            | Type    | Description                                            | 
+|-----------------|---------|--------------------------------------------------------|
+| `invite_code`*  | `string`| Invite code                                            |
+| `password`*     | `string`| Password. It's length must be >= 6                     |
+| `first_name`*   | `string`| Member's name. It's length must be >= 2 and <= 50      |
+| `last_name`*    | `string`| Member's surname. It's length must be >= 2 and <= 50   |
+
+#### Response
+An object with fields:
+| Name       | Type     | Description                                   | 
+|------------|----------|-----------------------------------------------|
+| `memberId` | `uint32` | Unique ID for new member                      |
+| `login`    | `string` | Member's login, which is also the user name   |
+
+### invites.create
+This method creates an invitation to register new member in bug tracker.
+
+#### Parameters
+| Name         | Type     | Description                                                         | 
+|--------------|----------|---------------------------------------------------------------------|
+| `user_name`* | `string` | New member's username and login. It's length must be >= 2 and <= 32 |
+
+#### Response
+An invite code. (`string`)
+
+### products.create
+This method creates a product.
+
+#### Parameters
+| Name     | Type     | Description                                              | 
+|----------|----------|----------------------------------------------------------|
+| `name`*  | `string` | A new product's name. It's length must be >= 2 and <= 64 |
+
+#### Response
+An ID of created product (`uint32`)
+
+### products.get
+This method returns products.
+
+#### Parameters
+| Name      | Type   | Description                                                                | 
+|-----------|--------|----------------------------------------------------------------------------|
+| `filter`  | `byte` | `1` — returns all products. `2` — only unfinished. By default `1`          |
+| `owned`   | `byte` | `1` — returns only those products created by the current authorized member |
+
+#### Response
+An object with fields:
+| Name    | Type        | Description                   | 
+|---------|-------------|-------------------------------|
+| `count` | `int32`     | Products count                |
+| `items` | `Product[]` | An array of [Product](#Product) objects   |
+
+### products.setAsFinished
+This method completes the product testing.
+
+#### Parameters
+| Name          | Type     | Description       | 
+|---------------|----------|-------------------|
+| `product_id`* | `uint32` | ID of the product |
+
+#### Response
+If you are a owner of the product, the method will return `true`, otherwise, an error `16`.
+
+## API objects
+
+### Product
+| Name         | Type     | Description                                           | 
+|--------------|----------|-------------------------------------------------------|
+| `id`         | `uint32` | Product's unique ID                                   |
+| `ownerId`    | `uint32` | ID of member who created the product                  |
+| `name`       | `string` | Name of the product                                   |
+| `isFinished` | `bool`   | Indicates that testing this product has been finished |
