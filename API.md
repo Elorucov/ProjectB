@@ -24,19 +24,19 @@ Example of an error response:
 
 The client must send the `Authorization: Bearer <access_token>` header to any methods except the `auth` section. Without this header, the server will return a error (code `5`). `access_token` can be obtained by calling the `auth.signIn` method.
 
-## API methods
+# API methods
 ProjectB has API methods described below. Please note: parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
 
-### auth.signIn
+## auth.signIn
 This method authorizes the member. 
 
-#### Parameters
+### Parameters
 | Name        | Type    | Description                  | 
 |-------------|---------|------------------------------|
 | `login` *   | `string`| Member's user name           |
 | `password`* | `string`| Password                     |
 
-#### Response
+### Response
 An object with fields:
 | Name          | Type     | Description                                                                     | 
 |---------------|----------|---------------------------------------------------------------------------------|
@@ -44,10 +44,10 @@ An object with fields:
 | `accessToken` | `string` | An access token that must be sent to API methods in the `Authorization` header  |
 | `expiresIn`   | `uint32` | Token lifetime in seconds                                                       |
 
-### auth.signUp
+## auth.signUp
 This method registers a new member in bug tracker via invite code.
 
-#### Parameters
+### Parameters
 | Name            | Type    | Description                                            | 
 |-----------------|---------|--------------------------------------------------------|
 | `invite_code`*  | `string`| Invite code                                            |
@@ -55,63 +55,65 @@ This method registers a new member in bug tracker via invite code.
 | `first_name`*   | `string`| Member's name. It's length must be >= 2 and <= 50      |
 | `last_name`*    | `string`| Member's surname. It's length must be >= 2 and <= 50   |
 
-#### Response
+### Response
 An object with fields:
 | Name       | Type     | Description                                   | 
 |------------|----------|-----------------------------------------------|
 | `memberId` | `uint32` | Unique ID for new member                      |
 | `login`    | `string` | Member's login, which is also the user name   |
 
-### invites.create
+## invites.create
 This method creates an invitation to register new member in bug tracker.
 
-#### Parameters
+### Parameters
 | Name         | Type     | Description                                                         | 
 |--------------|----------|---------------------------------------------------------------------|
 | `user_name`* | `string` | New member's username and login. It's length must be >= 2 and <= 32 |
 
-#### Response
+### Response
 An invite code. (`string`)
 
-### products.create
+## products.create
 This method creates a product.
 
-#### Parameters
+### Parameters
 | Name     | Type     | Description                                              | 
 |----------|----------|----------------------------------------------------------|
 | `name`*  | `string` | A new product's name. It's length must be >= 2 and <= 64 |
 
-#### Response
+### Response
 An ID of created product (`uint32`)
 
-### products.get
+## products.get
 This method returns products.
 
-#### Parameters
+### Parameters
 | Name      | Type   | Description                                                                | 
 |-----------|--------|----------------------------------------------------------------------------|
-| `filter`  | `byte` | `1` — returns all products. `2` — only unfinished. By default `1`          |
+| `filter`  | `byte` | `1` — returns all products.<br>`2` — only unfinished.<br>By default `1`    |
 | `owned`   | `byte` | `1` — returns only those products created by the current authorized member |
 
-#### Response
+### Response
 An object with fields:
-| Name    | Type        | Description                   | 
-|---------|-------------|-------------------------------|
-| `count` | `int32`     | Products count                |
+| Name    | Type        | Description                               | 
+|---------|-------------|-------------------------------------------|
+| `count` | `int32`     | Products count                            |
 | `items` | `Product[]` | An array of [Product](#Product) objects   |
 
-### products.setAsFinished
+## products.setAsFinished
 This method completes the product testing.
 
-#### Parameters
+### Parameters
 | Name          | Type     | Description       | 
 |---------------|----------|-------------------|
 | `product_id`* | `uint32` | ID of the product |
 
-#### Response
+### Response
 If you are a owner of the product, the method will return `true`, otherwise, an error `16`.
 
-## API objects
+# API objects
+
+## Basic
 
 ### Product
 | Name         | Type     | Description                                           | 
@@ -120,3 +122,17 @@ If you are a owner of the product, the method will return `true`, otherwise, an 
 | `ownerId`    | `uint32` | ID of member who created the product                  |
 | `name`       | `string` | Name of the product                                   |
 | `isFinished` | `bool`   | Indicates that testing this product has been finished |
+
+## Errors
+| Code  |  Message                                                                                                                                            | 
+|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `1`   |  `Internal server error`.<br>Returned if an unknown error occurred in the server. The `message` may contain additional information about the error. |
+| `2`   |  `Not implemented`.<br>Returned if you call an API method that not ready to use.                                                                    |
+| `3`   |  `Unknown method passed`.<br>Returned if you call an non-existent API method.                                                                       |
+| `4`   |  `Login or password is incorrect`.                                                                                                                  |
+| `5`   |  `Member authorization failed`.<br>Returned if the client did not pass the `Authorization` header, or if the access token is invalid.               |
+| `10`  |  `One of the parameters specified was missing or invalid`.<br>Returned if the client does not send required/mandatory parameters.                   |
+| `11`  |  `Not found`.<br>Returned if the DB does not contains requested item.                                                                               |
+| `12`  |  `Already exist`.                                                                                                                                   |
+| `15`  |  `Access denied`.                                                                                                                                   |
+| `16`  |  `Permission to perform this action is denied`.                                                                                                     |
