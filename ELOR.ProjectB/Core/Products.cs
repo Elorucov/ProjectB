@@ -25,7 +25,7 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
-        public static async Task<List<ProductDTO>> GetAsync(uint ownerId, bool onlyOwned, ProductsFilter filter) {
+        public static async Task<Tuple<List<ProductDTO>, List<MemberDTO>>> GetAsync(uint ownerId, bool onlyOwned, ProductsFilter filter, bool extended) {
             string sql = $"SELECT owner_id FROM products WHERE id = @id;";
             switch (filter) {
                 case ProductsFilter.All:
@@ -52,6 +52,8 @@ namespace ELOR.ProjectB.Core {
             cmd1.Dispose();
 
             List<ProductDTO> products = new List<ProductDTO>();
+            List<uint> mids = new List<uint>();
+            List<MemberDTO> members = null;
             if (resp.HasRows) {
                 while (resp.Read()) {
                     uint productId = (uint)resp.GetDecimal(0);
@@ -64,11 +66,13 @@ namespace ELOR.ProjectB.Core {
                         Name = name,
                         IsFinished = isFinished
                     });
+                    if (extended && !mids.Contains(productOwnerId)) mids.Add(productOwnerId);
                 }
+                resp.Close();
+                await resp.DisposeAsync();
+                if (extended && mids.Count > 0) members = await Members.GetAsync(mids);
             }
-
-            await resp.DisposeAsync();
-            return products;
+            return new Tuple<List<ProductDTO>, List<MemberDTO>>(products, members);
         }
 
         public static async Task<bool> CheckIsOwnerAsync(uint memberId, uint productId) {
@@ -82,7 +86,21 @@ namespace ELOR.ProjectB.Core {
                 uint ownerId = Convert.ToUInt32(resp);
                 return ownerId == memberId;
             } else {
-                throw new NotFoundException();
+                throw new NotFoundException("there is no product with given id");
+            }
+        }
+
+        public static async Task<bool> CheckIsFinishedAsync(uint productId) {
+            string sql = $"SELECT is_finished FROM products WHERE id = @id;";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@id", productId);
+            object resp = await cmd1.ExecuteScalarAsync();
+            cmd1.Dispose();
+
+            if (resp != null && resp is bool result) {
+                return result;
+            } else {
+                throw new NotFoundException("there is no product with given id");
             }
         }
 

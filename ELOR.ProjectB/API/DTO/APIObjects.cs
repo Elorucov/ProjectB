@@ -31,6 +31,8 @@
 
         public List<T> Items { get; private set; }
 
+        public List<MemberDTO> Members { get; init; }
+
         public APIList(List<T> items, int count) {
             Items = items;
             Count = count;

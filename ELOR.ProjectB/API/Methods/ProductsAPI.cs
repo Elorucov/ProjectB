@@ -17,11 +17,15 @@ namespace ELOR.ProjectB.API.Methods {
 
             ProductsFilter filter = ProductsFilter.All;
             bool onlyOwned = false;
+            bool extended = false;
             if (request.TryGetParameter("filter", out string filterStr) && byte.TryParse(filterStr, out byte filterB) && Enum.IsDefined(typeof(ProductsFilter), filterB)) filter = (ProductsFilter)filterB;
             if (request.TryGetParameter("owned", out string ownedStr) && ownedStr == "1") onlyOwned = true;
+            if (request.TryGetParameter("extended", out string ext)) extended = ext == "1";
 
-            var products = await Products.GetAsync(mid, onlyOwned, filter);
-            return Results.Json(new APIResponse<APIList<ProductDTO>>(new APIList<ProductDTO>(products, products.Count)));
+            var response = await Products.GetAsync(mid, onlyOwned, filter, extended);
+            var products = response.Item1;
+            var members = response.Item2;
+            return Results.Json(new APIResponse<APIList<ProductDTO>>(new APIList<ProductDTO>(products, products.Count) { Members = members }));
         }
 
         public static async Task<IResult> SetAsFinishedAsync(HttpRequest request) {
