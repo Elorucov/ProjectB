@@ -105,11 +105,11 @@ This method returns products.
 
 ### Response
 An object with fields:
-| Name      | Type        | Description                               | 
-|-----------|-------------|-------------------------------------------|
-| `count`   | `int32`     | Products count                            |
-| `items`   | `Product[]` | An array of [Product](#Product) objects   |
-| `members` | `Report[]`  | An array of [Member](#Member) objects     |
+| Name      | Type        | Description                                        | 
+|-----------|-------------|----------------------------------------------------|
+| `count`   | `int32`     | Products count                                     |
+| `items`   | `Product[]` | An array of [Product](#Product) objects            |
+| `members` | `Member[]`  | _(optional)_ An array of [Member](#Member) objects |
 
 ## products.setAsFinished
 This method completes the product testing.
@@ -155,11 +155,11 @@ This method return reports.
 
 ### Response
 An object with fields:
-| Name      | Type        | Description                               | 
-|-----------|-------------|-------------------------------------------|
-| `count`   | `int32`     | Reports count                             |
-| `items`   | `Report[]`  | An array of [Report](#Report) objects     |
-| `members` | `Report[]`  | An array of [Member](#Member) objects     |
+| Name      | Type        | Description                                        | 
+|-----------|-------------|----------------------------------------------------|
+| `count`   | `int32`     | Reports count                                      |
+| `items`   | `Report[]`  | An array of [Report](#Report) objects              |
+| `members` | `Member[]`  | _(optional)_ An array of [Member](#Member) objects |
 
 # API objects
 
@@ -194,16 +194,16 @@ An object with fields:
 | `expected`     | `string` | _(optional)_ Expected behavior.                       |
 
 ## Errors
-| Code  |  Message                                                                                                                                           | 
-|-------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `1`   |  `Internal server error`<br>Returned if an unknown error occurred in the server. The `message` may contain additional information about the error. |
-| `2`   |  `Not implemented`<br>Returned if you call an API method that not ready to use.                                                                    |
-| `3`   |  `Unknown method passed`<br>Returned if you call an non-existent API method.                                                                       |
-| `4`   |  `Login or password is incorrect`                                                                                                                  |
-| `5`   |  `Member authorization failed`<br>Returned if the client did not pass the `Authorization` header, or if the access token is invalid.               |
-| `10`  |  `One of the parameters specified was missing or invalid`<br>Returned if the client does not send required/mandatory parameters.                   |
-| `11`  |  `Not found`<br>Returned if the DB does not contains requested item.                                                                               |
-| `12`  |  `Already exist`                                                                                                                                   |
-| `15`  |  `Access denied`                                                                                                                                   |
-| `16`  |  `Permission to perform this action is denied`                                                                                                     |
-| `20`  |  `Testing of this product is over`                                                                                                                 |
+| Code  |  Message                                                                                                                                                                     | 
+|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `1`   |  `Internal server error`<br>Returned if an unknown error occurred in the server. The `message` may contain additional information about the error.                           |
+| `2`   |  `Not implemented`<br>Returned if you call an API method that not ready to use.                                                                                              |
+| `3`   |  `Unknown method passed`<br>Returned if you call an non-existent API method.                                                                                                 |
+| `4`   |  `Login or password is incorrect`                                                                                                                                            |
+| `5`   |  `Member authorization failed`<br>Returned if the client did not pass the `Authorization` header, or if the access token is invalid.                                         |
+| `10`  |  `One of the parameters specified was missing or invalid`<br>Returned if the client does not send required/mandatory parameters, or if value of these parameters is invalid. |
+| `11`  |  `Not found`<br>Returned if the DB does not contains requested item.                                                                                                         |
+| `12`  |  `Already exist`                                                                                                                                                             |
+| `15`  |  `Access denied`                                                                                                                                                             |
+| `16`  |  `Permission to perform this action is denied`                                                                                                                               |
+| `20`  |  `Testing of this product is over`                                                                                                                                           |
