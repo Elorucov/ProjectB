@@ -1,6 +1,9 @@
 # Contents
 
 * [ProjectB API Documentation](#projectb-api-documentation)
+  * [Request syntax](#request-syntax)
+  * [Authorization](#authorization)
+  * [Response format](#response-format)
 * [API Methods](#api-methods)
   * [auth.signIn](#authsignin)
   * [auth.signUp](#authsignup)
@@ -22,7 +25,34 @@
 
 # ProjectB API Documentation
 
-API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method). The server returns responses in JSON format and contains a `response` field in case of success, or an `error` field in case of error.
+## Request syntax
+
+To call a API method you need to make POST or GET request to the specified URL using HTTPS protocol:
+```
+http://localhost:7575/**METHOD_NAME**?**PARAMETERS**
+
+```
+**METHOD_NAME** — method name from the list of [API functions](#api-methods),
+**PARAMETERS** — parameters of the corresponding API method. You can send parameters as query, or in request body as `x-www-form-urlencoded` or `form-data` format.
+
+API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method).
+
+Example:
+```
+http://localhost:7575/auth.signIn?login=myusername&password=mypassword
+```
+
+## Authorization
+
+To run all API methods (except from `auth` section) you need to pass an `access_token`, a special access key, in the `Authorization` header:
+```
+Authorization: Bearer 1HxcvP819mtJdPmRtPOwi0SXEFVnVk9ZRYtVE3fgIyEBofUwIStm8xMTMdd3sTAUk5av7KSUyvCEZHmCwlvcqPbyVPkjsuFuPqXi3EthMKmRFvpe8ut2E5WXksywEiuzVv7l4JG3Rs8M3HPeCQ9sBN
+```
+Token is a string of digits and latin characters and may refer to a bug tracker's member. If you don't pass the `Authorization` header, the server will return a error (code `5`). You can obtain a token by calling the `auth.signIn` method.
+
+## Response format
+
+The server returns responses in JSON format and contains a `response` field in case of success, or an `error` field in case of error.
 
 Example of a successful response:
 ```
@@ -43,8 +73,6 @@ Example of an error response:
   }
 }
 ```
-
-The client must send the `Authorization: Bearer <access_token>` header to any methods except the `auth` section. Without this header, the server will return a error (code `5`). `access_token` can be obtained by calling the `auth.signIn` method.
 
 # API methods
 ProjectB has API methods described below. Please note: parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
