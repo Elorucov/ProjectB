@@ -1,3 +1,25 @@
+# Contents
+
+* [ProjectB API Documentation](#projectb-api-documentation)
+* [API Methods](#api-methods)
+  * [auth.signIn](#authsignin)
+  * [auth.signUp](#authsignup)
+  * [invites.create](#invitescreate)
+  * [products.create](#productscreate)
+  * [products.get](#productsget)
+  * [products.setAsFinished](#productssetasfinished)
+  * [reports.create](#reportscreate)
+  * [reports.get](#reportsget)
+* [API objects](#api-objects)
+  * [Basic](#basic)
+    *[Member](#member)
+    *[Product](#product)
+    *[Report](#report)
+  * [Enums](#enums)
+    * [Severity](#severity)
+    * [Problem types](#problem-types)
+  * [Errors](#errors)
+
 # ProjectB API Documentation
 
 API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method). The server returns responses in JSON format and contains a `response` field in case of success, or an `error` field in case of error.
@@ -136,7 +158,7 @@ This method creates a new bug report for the product.
 | `steps`*        | `string` | Steps to reproduce the bug. It's length must be <= 4096                    |
 | `actual`*       | `string` | Actual behavior. It's length must be <= 2048                               |
 | `severity`*     | `byte`   | A bug's [severity](#Severity)                                              |
-| `problem_type`* | `byte`   | A bug's [problem type](#Problem_type)                                      |
+| `problem_type`* | `byte`   | A bug's [problem type](#problem-types)                                     |
 
 ### Response
 An ID of the created report (`uint32`).
@@ -153,7 +175,7 @@ This method return reports. Please note: the server will not return vulnerabilit
 | `creator_id`    | `uint32` | Return only reports created by `creator_id`.                                                       |
 | `product_id`    | `uint32` | Return only reports created for product `product_id`                                               |
 | `severity`      | `byte`   | Return only reports with a specific [severity](#Severity)                                          |
-| `problem_type`  | `byte`   | Return only reports with a specific [problem type](#Problem_type)                                  |
+| `problem_type`  | `byte`   | Return only reports with a specific [problem type](#problem-types)                                 |
 | `extended`      | `byte`   | `1` — to return mentioned members and products array, and additional (optional) fields in products |
 
 ### Response
@@ -196,7 +218,7 @@ If authorized member pass a different `creator_id` ID than his own with `severit
 | `creatorId`    | `uint32` | An ID of member who created the report         |
 | `creationTime` | `int64`  | Creation timestamp (unixtime)                  |
 | `severity`     | `byte`   | A bug's [severity](#Severity)                  |
-| `problemType`  | `byte`   | A bug's [problem type](#Problem_types)         |
+| `problemType`  | `byte`   | A bug's [problem type](#problem-types)         |
 | `title`        | `string` | Report title — short description of the bug.   |
 | `steps`        | `string` | _(optional)_ Steps to reproduce the bug.       |
 | `actual`       | `string` | _(optional)_ Actual behavior.                  |
