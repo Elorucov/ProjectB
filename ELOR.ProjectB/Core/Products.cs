@@ -25,8 +25,36 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
-        public static async Task<Tuple<List<ProductDTO>, List<MemberDTO>>> GetAsync(uint ownerId, bool onlyOwned, ProductsFilter filter, bool extended) {
-            string sql = $"SELECT owner_id FROM products WHERE id = @id;";
+        public static async Task<List<ProductDTO>> GetByIdAsync(List<uint> ids) {
+            string idstr = string.Join(",", ids);
+            string sql = $"SELECT * FROM products WHERE id IN ({idstr})";
+
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            DbDataReader resp = await cmd1.ExecuteReaderAsync();
+            cmd1.Dispose();
+
+            List<ProductDTO> products = new List<ProductDTO>();
+            if (resp.HasRows) {
+                while (resp.Read()) {
+                    uint productId = (uint)resp.GetDecimal(0);
+                    uint productOwnerId = (uint)resp.GetDecimal(1);
+                    string name = resp.GetString(2);
+                    bool isFinished = resp.GetBoolean(3);
+                    products.Add(new ProductDTO {
+                        Id = productId,
+                        OwnerId = productOwnerId,
+                        Name = name,
+                        IsFinished = isFinished
+                    });
+                }
+            }
+
+            await resp.DisposeAsync();
+            return products;
+        }
+
+        public static async Task<Tuple<List<ProductDTO>, List<MemberDTO>>> GetFilteredAsync(uint ownerId, bool onlyOwned, ProductsFilter filter, bool extended) {
+            string sql = string.Empty;
             switch (filter) {
                 case ProductsFilter.All:
                     sql = $"SELECT * FROM products";
@@ -69,9 +97,9 @@ namespace ELOR.ProjectB.Core {
                     if (extended && !mids.Contains(productOwnerId)) mids.Add(productOwnerId);
                 }
                 resp.Close();
-                await resp.DisposeAsync();
-                if (extended && mids.Count > 0) members = await Members.GetAsync(mids);
+                if (extended && mids.Count > 0) members = await Members.GetByIdAsync(mids);
             }
+            await resp.DisposeAsync();
             return new Tuple<List<ProductDTO>, List<MemberDTO>>(products, members);
         }
 

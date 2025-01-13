@@ -1,6 +1,6 @@
-# ProjectB API Reference
+# ProjectB API Documentation
 
-The API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method). The server returns responses in JSON format and contains a `response` field in case of success, or an `error` field in case of error.
+API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method). The server returns responses in JSON format and contains a `response` field in case of success, or an `error` field in case of error.
 
 Example of a successful response:
 ```
@@ -31,18 +31,18 @@ ProjectB has API methods described below. Please note: parameters marked with an
 This method authorizes the member. 
 
 ### Parameters
-| Name        | Type    | Description                  | 
-|-------------|---------|------------------------------|
-| `login` *   | `string`| Member's user name           |
-| `password`* | `string`| Password                     |
+| Name        | Type    | Description                    | 
+|-------------|---------|--------------------------------|
+| `login` *   | `string`| A member's user name           |
+| `password`* | `string`| A password                     |
 
 ### Response
 An object with fields:
-| Name          | Type     | Description                                                                     | 
-|---------------|----------|---------------------------------------------------------------------------------|
-| `memberId`    | `uint32` | Authorized member's ID                                                          |
-| `accessToken` | `string` | An access token that must be sent to API methods in the `Authorization` header  |
-| `expiresIn`   | `uint32` | Token lifetime in seconds                                                       |
+| Name          | Type     | Description                                                                        | 
+|---------------|----------|------------------------------------------------------------------------------------|
+| `memberId`    | `uint32` | An authorized member's ID                                                          |
+| `accessToken` | `string` | An access token that must be sent to API methods in the `Authorization` header     |
+| `expiresIn`   | `uint32` | Token lifetime in seconds                                                          |
 
 ### Errors
 This method may return an error `4`.
@@ -51,19 +51,19 @@ This method may return an error `4`.
 This method registers a new member in bug tracker via invite code.
 
 ### Parameters
-| Name            | Type    | Description                                            | 
-|-----------------|---------|--------------------------------------------------------|
-| `invite_code`*  | `string`| Invite code                                            |
-| `password`*     | `string`| Password. It's length must be >= 6                     |
-| `first_name`*   | `string`| Member's name. It's length must be >= 2 and <= 50      |
-| `last_name`*    | `string`| Member's surname. It's length must be >= 2 and <= 50   |
+| Name            | Type    | Description                                               | 
+|-----------------|---------|-----------------------------------------------------------|
+| `invite_code`*  | `string`| An invite code                                            |
+| `password`*     | `string`| A password. It's length must be >= 6                      |
+| `first_name`*   | `string`| A member's name. It's length must be >= 2 and <= 50       |
+| `last_name`*    | `string`| A member's surname. It's length must be >= 2 and <= 50    |
 
 ### Response
 An object with fields:
-| Name       | Type     | Description                                   | 
-|------------|----------|-----------------------------------------------|
-| `memberId` | `uint32` | Unique ID for new member                      |
-| `login`    | `string` | Member's login, which is also the user name   |
+| Name       | Type     | Description                                      | 
+|------------|----------|--------------------------------------------------|
+| `memberId` | `uint32` | An unique ID for new member                      |
+| `login`    | `string` | A member's login, which is also the user name    |
 
 ### Errors
 This method may return an error `11`.
@@ -72,9 +72,9 @@ This method may return an error `11`.
 This method creates an invitation to register new member in bug tracker.
 
 ### Parameters
-| Name         | Type     | Description                                                         | 
-|--------------|----------|---------------------------------------------------------------------|
-| `user_name`* | `string` | New member's username and login. It's length must be >= 2 and <= 32 |
+| Name         | Type     | Description                                                           | 
+|--------------|----------|-----------------------------------------------------------------------|
+| `user_name`* | `string` | A new member's username and login. It's length must be >= 2 and <= 32 |
 
 ### Response
 An invite code. (`string`)
@@ -101,7 +101,7 @@ This method returns products.
 |------------|--------|--------------------------------------------------------------------------------------|
 | `filter`   | `byte` | `1` — returns all products.<br>`2` — returns only unfinished ones.<br>By default `1` |
 | `owned`    | `byte` | `1` — returns only those products created by the current authorized member           |
-| `extended` | `byte` | `1` — to return members array                                                        |
+| `extended` | `byte` | `1` — to return mentioned members array                                              |
 
 ### Response
 An object with fields:
@@ -115,9 +115,9 @@ An object with fields:
 This method completes the product testing.
 
 ### Parameters
-| Name          | Type     | Description       | 
-|---------------|----------|-------------------|
-| `product_id`* | `uint32` | ID of the product |
+| Name          | Type     | Description          | 
+|---------------|----------|----------------------|
+| `product_id`* | `uint32` | An ID of the product |
 
 ### Response
 If authorized member is a owner of the product, the method will return `true`.
@@ -129,49 +129,56 @@ If authorized member is not a owner of the product, the method will return an er
 This method creates a new bug report for the product.
 
 ### Parameters
-| Name            | Type     | Description                                                             | 
-|-----------------|----------|-------------------------------------------------------------------------|
-| `product_id`*   | `uint32` | ID of the product                                                       |
-| `title`*        | `string` | Report title — short description of the bug. It's length must be <= 128 |
-| `steps`*        | `string` | Steps to reproduce the bug. It's length must be <= 4096                 |
-| `actual`*       | `string` | Actual behavior. It's length must be <= 2048                            |
-| `expected`*     | `string` | Expected behavior. It's length must be <= 2048                          |
+| Name            | Type     | Description                                                                | 
+|-----------------|----------|----------------------------------------------------------------------------|
+| `product_id`*   | `uint32` | An ID of the product                                                       |
+| `title`*        | `string` | Report title — short description of the bug. It's length must be <= 128    |
+| `steps`*        | `string` | Steps to reproduce the bug. It's length must be <= 4096                    |
+| `actual`*       | `string` | Actual behavior. It's length must be <= 2048                               |
+| `severity`*     | `byte`   | A bug's [severity](#Severity)                                              |
+| `problem_type`* | `byte`   | A bug's [problem type](#Problem_type)                                      |
 
 ### Response
 An ID of the created report (`uint32`).
 
 ### Errors
-If authorized member pass an ID of product whose testing has been finished, the server will return an error `20`.
+If client pass an ID of product whose testing has been finished, the server will return an error `20`.
 
 ## reports.get
-This method return reports.
+This method return reports. Please note: the server will not return vulnerability reports whose creator is not the currently authorized member.
 
 ### Parameters
-| Name            | Type     | Description                                                                | 
-|-----------------|----------|----------------------------------------------------------------------------|
-| `creator_id`    | `uint32` | Return only reports created by `creator_id`.                               |
-| `product_id`    | `uint32` | Return only reports created for product `product_id`                       |
-| `extended`      | `byte`   | `1` — to return members array and additional (optional) fields in products |
+| Name            | Type     | Description                                                                                        | 
+|-----------------|----------|----------------------------------------------------------------------------------------------------|
+| `creator_id`    | `uint32` | Return only reports created by `creator_id`.                                                       |
+| `product_id`    | `uint32` | Return only reports created for product `product_id`                                               |
+| `severity`      | `byte`   | Return only reports with a specific [severity](#Severity)                                          |
+| `problem_type`  | `byte`   | Return only reports with a specific [problem type](#Problem_type)                                  |
+| `extended`      | `byte`   | `1` — to return mentioned members and products array, and additional (optional) fields in products |
 
 ### Response
 An object with fields:
-| Name      | Type        | Description                                        | 
-|-----------|-------------|----------------------------------------------------|
-| `count`   | `int32`     | Reports count                                      |
-| `items`   | `Report[]`  | An array of [Report](#Report) objects              |
-| `members` | `Member[]`  | _(optional)_ An array of [Member](#Member) objects |
+| Name       | Type         | Description                                          | 
+|------------|--------------|------------------------------------------------------|
+| `count`    | `int32`      | Reports count                                        |
+| `items`    | `Report[]`   | An array of [Report](#Report) objects                |
+| `members`  | `Member[]`   | _(optional)_ An array of [Member](#Member) objects   |
+| `products` | `Product[]`  | _(optional)_ An array of [Product](#Product) objects |
+
+### Errors
+If authorized member pass a different `creator_id` ID than his own with `severity = 5` (vulnerability), the server will return an error `15`.
 
 # API objects
 
 ## Basic
 
 ### Member
-| Name         | Type     | Description                                           | 
-|--------------|----------|-------------------------------------------------------|
-| `id`         | `uint32` | Member's unique ID                                    |
-| `userName`   | `string` | Member's user name (login)                            |
-| `firstName`  | `string` | Member's name                                         |
-| `lastName`   | `string` | Member's last name                                    |
+| Name         | Type     | Description                | 
+|--------------|----------|----------------------------|
+| `id`         | `uint32` | Member's unique ID         |
+| `userName`   | `string` | Member's user name (login) |
+| `firstName`  | `string` | Member's name              |
+| `lastName`   | `string` | Member's last name         |
 
 ### Product
 | Name         | Type     | Description                                           | 
@@ -182,16 +189,41 @@ An object with fields:
 | `isFinished` | `bool`   | Indicates that testing this product has been finished |
 
 ### Report
-| Name           | Type     | Description                                           | 
-|----------------|----------|-------------------------------------------------------|
-| `id`           | `uint32` | Report's unique ID                                    |
-| `productId`    | `uint32` | ID of the product the report belongs to               |
-| `creatorId`    | `uint32` | ID of member who created the report                   |
-| `creationTime` | `int64`  | Creation timestamp (unixtime)                         |
-| `title`        | `string` | Report title — short description of the bug.          |
-| `steps`        | `string` | _(optional)_ Steps to reproduce the bug.              |
-| `actual`       | `string` | _(optional)_ Actual behavior.                         |
-| `expected`     | `string` | _(optional)_ Expected behavior.                       |
+| Name           | Type     | Description                                    | 
+|----------------|----------|------------------------------------------------|
+| `id`           | `uint32` | A report's unique ID                           |
+| `productId`    | `uint32` | An ID of the product the report belongs to     |
+| `creatorId`    | `uint32` | An ID of member who created the report         |
+| `creationTime` | `int64`  | Creation timestamp (unixtime)                  |
+| `severity`     | `byte`   | A bug's [severity](#Severity)                  |
+| `problemType`  | `byte`   | A bug's [problem type](#Problem_types)         |
+| `title`        | `string` | Report title — short description of the bug.   |
+| `steps`        | `string` | _(optional)_ Steps to reproduce the bug.       |
+| `actual`       | `string` | _(optional)_ Actual behavior.                  |
+| `expected`     | `string` | _(optional)_ Expected behavior.                |
+
+## Enums
+
+### Severity
+| Value  | Meaning       | 
+|--------|---------------|
+| `1`    | low           |
+| `2`    | medium        |
+| `3`    | high          |
+| `4`    | critical      |
+| `5`    | vulnerability |
+
+### Problem types
+| Value  | Meaning                 | 
+|--------|-------------------------|
+| `1`    | suggestion              |
+| `2`    | app crashed             |
+| `3`    | app froze               |
+| `4`    | function not working    |
+| `5`    | data damage             |
+| `6`    | performance             |
+| `7`    | aesthetic discrepancies |
+| `8`    | typo                    |
 
 ## Errors
 | Code  |  Message                                                                                                                                                                     | 

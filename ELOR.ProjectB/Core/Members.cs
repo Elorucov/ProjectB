@@ -5,7 +5,7 @@ using System.Data.Common;
 
 namespace ELOR.ProjectB.Core {
     public static class Members {
-        public static async Task<List<MemberDTO>> GetAsync(List<uint> ids) {
+        public static async Task<List<MemberDTO>> GetByIdAsync(List<uint> ids) {
             string idstr = string.Join(",", ids);
             string sql = $"SELECT * FROM members WHERE id IN ({idstr})";
 

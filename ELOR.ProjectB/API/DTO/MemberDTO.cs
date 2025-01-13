@@ -5,4 +5,10 @@
         public string FirstName { get; init; }
         public string LastName { get; init; }
     }
+
+    public class APIListWithMembers<T> : APIList<T> {
+        public APIListWithMembers(List<T> items, int count) : base(items, count) { }
+
+        public List<MemberDTO> Members { get; init; }
+    }
 }

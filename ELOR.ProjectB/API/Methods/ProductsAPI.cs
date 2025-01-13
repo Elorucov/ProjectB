@@ -22,10 +22,19 @@ namespace ELOR.ProjectB.API.Methods {
             if (request.TryGetParameter("owned", out string ownedStr) && ownedStr == "1") onlyOwned = true;
             if (request.TryGetParameter("extended", out string ext)) extended = ext == "1";
 
-            var response = await Products.GetAsync(mid, onlyOwned, filter, extended);
-            var products = response.Item1;
-            var members = response.Item2;
-            return Results.Json(new APIResponse<APIList<ProductDTO>>(new APIList<ProductDTO>(products, products.Count) { Members = members }));
+            var data = await Products.GetFilteredAsync(mid, onlyOwned, filter, extended);
+            var products = data.Item1;
+            var members = data.Item2;
+
+
+            object response = null;
+            if (extended) {
+                response = new APIResponse<APIListWithMembers<ProductDTO>>(new APIListWithMembers<ProductDTO>(products, products.Count) { Members = members });
+            } else {
+                response = new APIResponse<APIList<ProductDTO>>(new APIList<ProductDTO>(products, products.Count));
+            }
+
+            return Results.Json(response);
         }
 
         public static async Task<IResult> SetAsFinishedAsync(HttpRequest request) {

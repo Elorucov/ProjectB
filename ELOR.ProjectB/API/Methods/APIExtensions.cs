@@ -47,20 +47,34 @@ namespace ELOR.ProjectB.API.Methods {
 
         public static string ValidateAndGetValue(this HttpRequest request, string paramName) {
             if (!request.TryGetParameter(paramName, out string value)) throw new InvalidParameterException($"{paramName} is missing");
-            if (string.IsNullOrWhiteSpace(value)) throw new InvalidParameterException($"{paramName} is empty");
+            if (string.IsNullOrWhiteSpace(value)) throw new InvalidParameterException($"{paramName}'s value is empty");
             return value;
         }
 
         public static string ValidateAndGetValue(this HttpRequest request, string paramName, int min, int max = 255) {
             string value = request.ValidateAndGetValue(paramName);
-            if (value.Length < 2) throw new InvalidParameterException($"{paramName} length must be greater than {min}");
-            if (value.Length > 64) throw new InvalidParameterException($"{paramName} length must be less than {max}");
+            if (value.Length < 2) throw new InvalidParameterException($"{paramName}'s value length must be greater than {min}");
+            if (value.Length > 64) throw new InvalidParameterException($"{paramName}'s value length must be less than {max}");
             return value;
         }
 
         public static uint ValidateAndGetUIntValue(this HttpRequest request, string paramName) {
             if (!request.TryGetParameter(paramName, out string valueStr)) throw new InvalidParameterException($"{paramName} is missing");
-            if (!uint.TryParse(valueStr, out uint value) || value == 0) throw new InvalidParameterException($"{paramName} is invalid (must be uint and non-zero)");
+            if (!uint.TryParse(valueStr, out uint value) || value == 0) throw new InvalidParameterException($"{paramName}'s value is invalid (must be uint and non-zero)");
+            return value;
+        }
+
+        public static byte ValidateAndGetByteConstValue(this HttpRequest request, string paramName, byte firstConst, byte lastConst) {
+            if (!request.TryGetParameter(paramName, out string valueStr)) throw new InvalidParameterException($"{paramName} is missing");
+            if (!byte.TryParse(valueStr, out byte value)) throw new InvalidParameterException($"{paramName}'s value is invalid");
+            if (value < firstConst || value > lastConst) throw new InvalidParameterException($"{paramName}'s value should be between {firstConst} and {lastConst}");
+            return value;
+        }
+
+        public static byte ValidateAndGetByteConstValue(this HttpRequest request, string paramName, byte[] supportedValues) {
+            if (!request.TryGetParameter(paramName, out string valueStr)) throw new InvalidParameterException($"{paramName} is missing");
+            if (!byte.TryParse(valueStr, out byte value)) throw new InvalidParameterException($"{paramName}'s value is invalid");
+            if (!supportedValues.Contains(value)) throw new InvalidParameterException($"{paramName}'s value should be one of these values: {string.Join(", ", supportedValues)}");
             return value;
         }
     }
