@@ -50,6 +50,21 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
+        public static async Task<bool> DeleteAsync(uint authorizedMemberId, uint reportId) {
+            string sql = $"CALL deleteReport(@mid, @rid);";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@rid", reportId);
+            int resp = await cmd1.ExecuteNonQueryAsync();
+            cmd1.Dispose();
+
+            if (resp > 0) {
+                return true;
+            } else {
+                throw new ApplicationException("unable to execute DB procedure, try later");
+            }
+        }
+
         public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, byte status, bool extended) {
             bool dontGetVulnerabilities = severity == 0 && authorizedMemberId != creatorId;
 

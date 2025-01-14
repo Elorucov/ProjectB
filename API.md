@@ -13,6 +13,7 @@
   * [products.setAsFinished](#productssetasfinished)
   * [reports.changeStatus](#reportschangestatus)
   * [reports.create](#reportscreate)
+  * [reports.delete](#reportsdelete)
   * [reports.get](#reportsget)
   * [server.getEnumStrings](#servergetenumstrings)
 * [API objects](#api-objects)
@@ -215,6 +216,20 @@ An ID of the created report (`uint32`).
 
 ### Errors
 If client pass an ID of product whose testing has been finished, the server will return an error `20`.
+
+## reports.delete
+This method deletes the report.
+
+### Parameters
+| Name          | Type     | Description                                                                | 
+|---------------|----------|----------------------------------------------------------------------------|
+| `report_id`*  |  uint32  | An ID of the report                                                        |
+
+### Response
+`true`, if success.
+
+### Errors
+This method may return error with these codes: `11`, `16`.
 
 ## reports.get
 This method return reports. Please note: the server does not return reports with vulnerabilities that are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member.

@@ -29,6 +29,15 @@ namespace ELOR.ProjectB.API.Methods {
             return Results.Json(new APIResponse<uint>(newCommentId));
         }
 
+        public static async Task<IResult> DeleteAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint reportId = request.ValidateAndGetUIntValue("report_id");
+
+            bool result = await Reports.DeleteAsync(mid, reportId);
+            return Results.Json(new APIResponse<bool>(result));
+        }
+
         public static async Task<IResult> GetAsync(HttpRequest request) {
             uint mid = request.EnsureAuthorized();
 

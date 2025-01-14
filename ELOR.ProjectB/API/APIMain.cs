@@ -26,6 +26,7 @@ namespace ELOR.ProjectB.API {
 
             app.Map("/reports.changeStatus", ReportsAPI.ChangeStatusAsync);
             app.Map("/reports.create", ReportsAPI.CreateAsync);
+            app.Map("/reports.delete", ReportsAPI.DeleteAsync);
             app.Map("/reports.get", ReportsAPI.GetAsync);
 
             app.Map("/server.getEnumStrings", ServerAPI.GetEnums);
