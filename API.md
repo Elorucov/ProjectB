@@ -300,17 +300,17 @@ This object type is used to describe human readable [enum](#enums) values to the
 The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.
 
 ### Severity
-| ID    | Name          |  Description                                                                                                                                                                         | Supported |
-|-------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| ID    | Name          |  Description                                                                                                                                   | Supported |
+|-------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
 | `1`   | Low           | Bugs that don't violate business logic, with an insignificant effect on the product overall, problems reflecting elements and data on the screen, grammatical and spelling mistakes. | true      |
-| `2`   | Medium        | The bug doesn't critically affect the product but causes a major inconvenience. The feature doesn't work correctly, but there is a workaround.                                       | true      |
-| `3`   | High          | A feature isn't working properly or at all. For example, messages can't be sent, or photos can't be deleted.                                                                         | true      |
-| `4`   | Critical      | Bugs that inhibit any further work from the app or further testing; crashes, freezing, loss of or damage to user data.                                                               | true      |
-| `5`   | Vulnerability | Such reports visible only for the report creator and the product owner.                                                                                                              | true      |
+| `2`   | Medium        | The bug doesn't critically affect the product but causes a major inconvenience. The feature doesn't work correctly, but there is a workaround. | true      |
+| `3`   | High          | A feature isn't working properly or at all. For example, messages can't be sent, or photos can't be deleted.                                   | true      |
+| `4`   | Critical      | Bugs that inhibit any further work from the app or further testing; crashes, freezing, loss of or damage to user data.                         | true      |
+| `5`   | Vulnerability | Such reports visible only for the report creator and the product owner.                                                                        | true      |
 
 ### Problem types
 | ID    | Name                    | Description                                                                                           | Supported |
-|-------|-------------------------|-------------------------------------------------------------------------------------------------------| Supported |
+|-------|-------------------------|-------------------------------------------------------------------------------------------------------|-----------|
 | `1`   | Suggestion              | Changes which you think should be made to improve the user experience.                                | true      | 
 | `2`   | App crashes             | The app crashes, inhibiting any further work or testing.                                              | true      | 
 | `3`   | App froze               | The app freezes, inhibiting any further work or testing.                                              | true      | 
