@@ -21,6 +21,12 @@ namespace ELOR.ProjectB.DataBase {
             return _connection;
         }
 
+        public static async Task TestDBProcedure() {
+            string sql = $"CALL testerror (3);";
+            MySqlCommand cmd2 = new MySqlCommand(sql, Connection);
+            await cmd2.ExecuteNonQueryAsync();
+        }
+
         public static async Task<bool> SetupDatabaseAsync() {
             bool needSetup = false;
             Debug.WriteLine($"DBClient.SetupDatabaseAsync: starting");
@@ -37,7 +43,7 @@ namespace ELOR.ProjectB.DataBase {
             }
 
             Debug.WriteLine($"DBClient.SetupDatabaseAsync: Dropping all and creating tables in DB...");
-            MySqlScript script = new MySqlScript(_connection, File.ReadAllText("db.sql"));
+            MySqlScript script = new MySqlScript(Connection, File.ReadAllText("db.sql"));
             int executedStatements = await script.ExecuteAsync();
             Debug.WriteLine($"DBClient.SetupDatabaseAsync: Executed statements: {executedStatements}");
 

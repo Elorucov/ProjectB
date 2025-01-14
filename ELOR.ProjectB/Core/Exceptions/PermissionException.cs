@@ -1,10 +1,10 @@
 ﻿namespace ELOR.ProjectB.Core.Exceptions {
     public class PermissionException : ServerException {
-        public PermissionException() : base(16, "Permission to perform this action is denied") {
+        public PermissionException() : base(16) {
             HTTPCode = 403;
         }
 
-        public PermissionException(string message) : base(16, "Permission to perform this action is denied", message) {
+        public PermissionException(string message) : base(16, null, message) {
             HTTPCode = 403;
         }
     }

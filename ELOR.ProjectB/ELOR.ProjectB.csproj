@@ -20,4 +20,10 @@
     <PackageReference Include="Branca" Version="0.7.0" />
     <PackageReference Include="MySql.Data" Version="9.1.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SQLProcedures\reportRemover.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

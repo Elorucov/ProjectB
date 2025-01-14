@@ -3,6 +3,8 @@ using ELOR.ProjectB.API.DTO;
 using ELOR.ProjectB.Core;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Xml.Linq;
+using MySql.Data.MySqlClient;
+using System.Text;
 
 namespace ELOR.ProjectB.API.Methods {
     public static class APIExtensions {
@@ -38,10 +40,25 @@ namespace ELOR.ProjectB.API.Methods {
                 httpCode = srvex.HTTPCode;
                 string message = string.IsNullOrEmpty(srvex.AdditionalInfo) ? srvex.Message : srvex.Message + ": " + srvex.AdditionalInfo;
                 return new APIError(srvex.Code, message);
+            } else if (ex is MySqlException sqlex) {
+                (int code, string message) = GetAPIObjectForMySQLError(sqlex);
+                return new APIError(code, message);
             } else if (ex is NotImplementedException niex) {
-                return new APIError(2, "Not implemented");
+                return new APIError(2, ServerException.DefinedErrors[2]);
             } else {
-                return new APIError(1, "Internal server error: " + ex.Message);
+                return new APIError(1, $"{ServerException.DefinedErrors[1]}: {ex.Message}");
+            }
+        }
+
+        private static (int code, string message) GetAPIObjectForMySQLError(MySqlException sqlex) {
+            switch (sqlex.Number) {
+                case Constants.DB_ERRNUM_NOT_FOUND: return (11, ServerException.DefinedErrors[11]);
+                case Constants.DB_ERRNUM_ACCESS_DENIED: return (15, ServerException.DefinedErrors[15]);
+                case Constants.DB_ERRNUM_PERMISSION_DENIED: return (16, ServerException.DefinedErrors[16]);
+                case Constants.DB_ERRNUM_WRONG_STATUS: return (40, ServerException.DefinedErrors[40]);
+                case Constants.DB_ERRNUM_STATUS_COMMENT_REQUIRED: return (41, ServerException.DefinedErrors[41]);
+                case Constants.DB_ERRNUM_TEST: return (1, $"{ServerException.DefinedErrors[1]}: this is a test error from MySQL");
+                default: return (1, $"{ServerException.DefinedErrors[1]}: {sqlex.Message}");
             }
         }
 
@@ -64,17 +81,27 @@ namespace ELOR.ProjectB.API.Methods {
             return value;
         }
 
-        public static byte ValidateAndGetByteConstValue(this HttpRequest request, string paramName, byte firstConst, byte lastConst) {
+        public static byte ValidateAndGetByteConstValue(this HttpRequest request, string paramName, byte firstConst, byte lastConst, string additionalInfo = null) {
             if (!request.TryGetParameter(paramName, out string valueStr)) throw new InvalidParameterException($"{paramName} is missing");
             if (!byte.TryParse(valueStr, out byte value)) throw new InvalidParameterException($"{paramName}'s value is invalid");
-            if (value < firstConst || value > lastConst) throw new InvalidParameterException($"{paramName}'s value should be between {firstConst} and {lastConst}");
+            if (value < firstConst || value > lastConst) {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{paramName}'s value should be between {firstConst} and {lastConst}");
+                if (!string.IsNullOrEmpty(additionalInfo)) sb.Append($". {additionalInfo}");
+                throw new InvalidParameterException(sb.ToString());
+            }
             return value;
         }
 
-        public static byte ValidateAndGetByteConstValue(this HttpRequest request, string paramName, byte[] supportedValues) {
+        public static byte ValidateAndGetByteConstValue(this HttpRequest request, string paramName, byte[] supportedValues, string additionalInfo = null) {
             if (!request.TryGetParameter(paramName, out string valueStr)) throw new InvalidParameterException($"{paramName} is missing");
             if (!byte.TryParse(valueStr, out byte value)) throw new InvalidParameterException($"{paramName}'s value is invalid");
-            if (!supportedValues.Contains(value)) throw new InvalidParameterException($"{paramName}'s value should be one of these values: {string.Join(", ", supportedValues)}");
+            if (!supportedValues.Contains(value)) {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{paramName}'s value should be one of these values: {string.Join(", ", supportedValues)}");
+                if (!string.IsNullOrEmpty(additionalInfo)) sb.Append($". {additionalInfo}");
+                throw new InvalidParameterException(sb.ToString());
+            }
             return value;
         }
     }

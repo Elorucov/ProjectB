@@ -11,16 +11,20 @@
   * [products.create](#productscreate)
   * [products.get](#productsget)
   * [products.setAsFinished](#productssetasfinished)
+  * [reports.changeStatus](#reportschangestatus)
   * [reports.create](#reportscreate)
   * [reports.get](#reportsget)
+  * [server.getEnumStrings](#servergetenumstrings)
 * [API objects](#api-objects)
   * [Basic](#basic)
-  * [Member](#member)
+    * [EnumInfo](#enuminfo)
+    * [Member](#member)
     * [Product](#product)
     * [Report](#report)
   * [Enums](#enums)
     * [Severity](#severity)
     * [Problem types](#problem-types)
+    * [Report statuses](#report-statuses)
   * [Errors](#errors)
 
 # ProjectB API Documentation
@@ -155,11 +159,11 @@ This method returns products.
 
 ### Response
 An object with fields:
-| Name      | Type        | Description                                        | 
-|-----------|-------------|----------------------------------------------------|
-| `count`   | `int32`     | Products count                                     |
-| `items`   | `Product[]` | An array of [Product](#Product) objects            |
-| `members` | `Member[]`  | _(optional)_ An array of [Member](#Member) objects |
+| Name      | Type                    | Description                                | 
+|-----------|-------------------------|--------------------------------------------|
+| `count`   | `int32`                 | Products count                             |
+| `items`   | `[Product](#product)[]` | An array of products                       |
+| `members` | `[Member](#member)[]`   | _(optional)_ An array of mentioned members |
 
 ## products.setAsFinished
 This method completes the product testing.
@@ -174,6 +178,22 @@ If authorized member is a owner of the product, the method will return `true`.
 
 ### Errors
 If authorized member is not a owner of the product, the method will return an error `16`.<br>If the member pass an ID of non-existent product, the server will return an error `11`.
+
+## reports.changeStatus
+This method changes the status for report.
+
+### Parameters
+| Name          | Type     | Description                                                                | 
+|---------------|----------|----------------------------------------------------------------------------|
+| `report_id`*  | `uint32` | An ID of the report                                                        |
+| `status`*     | `byte`   | The status ID to assign                                                    |
+| `comment`     | `string` | A comment. May be mandatory depends of status                              |
+
+### Response
+An ID of the created comment (`uint32`).
+
+### Errors
+This method may return error with these codes: `11`, `16`, `40`, `41`.
 
 ## reports.create
 This method creates a new bug report for the product.
@@ -195,7 +215,7 @@ An ID of the created report (`uint32`).
 If client pass an ID of product whose testing has been finished, the server will return an error `20`.
 
 ## reports.get
-This method return reports. Please note: the server will not return vulnerability reports whose creator is not the currently authorized member.
+This method return reports. Please note: the server does not return reports with vulnerabilities that are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member.
 
 ### Parameters
 | Name            | Type     | Description                                                                                        | 
@@ -204,78 +224,126 @@ This method return reports. Please note: the server will not return vulnerabilit
 | `product_id`    | `uint32` | Return only reports created for product `product_id`                                               |
 | `severity`      | `byte`   | Return only reports with a specific [severity](#Severity)                                          |
 | `problem_type`  | `byte`   | Return only reports with a specific [problem type](#problem-types)                                 |
+| `status`        | `byte`   | Return only reports with a specific [status](#report-statuses)                                     |
 | `extended`      | `byte`   | `1` — to return mentioned members and products array, and additional (optional) fields in products |
 
 ### Response
 An object with fields:
-| Name       | Type         | Description                                          | 
-|------------|--------------|------------------------------------------------------|
-| `count`    | `int32`      | Reports count                                        |
-| `items`    | `Report[]`   | An array of [Report](#Report) objects                |
-| `members`  | `Member[]`   | _(optional)_ An array of [Member](#Member) objects   |
-| `products` | `Product[]`  | _(optional)_ An array of [Product](#Product) objects |
+| Name       | Type                    | Description                                 | 
+|------------|-------------------------|---------------------------------------------|
+| `count`    | `int32`                 | Reports count                               |
+| `items`    | `[Report](#report)[]`   | An array of reports                         |
+| `members`  | `[Member](#member)[]`   | _(optional)_ An array of mentioned members  |
+| `products` | `[Product](#product)[]` | _(optional)_ An array of mentioned products |
 
 ### Errors
 If authorized member pass a different `creator_id` ID than his own with `severity = 5` (vulnerability), the server will return an error `15`.
+
+## server.getEnumStrings
+This method returns descriptions for the ID parameters used in the bug tracker. Currently 
+
+### Parameters
+Doesn't have
+
+### Response
+An object with fields:
+| Name             | Type                      | Description                                      | 
+|------------------|---------------------------|--------------------------------------------------|
+| `severities`     | `[EnumInfo](#enuminfo)[]` | Human-readable definitions for severity IDs      |
+| `problemTypes`   | `[EnumInfo](#enuminfo)[]` | Human-readable definitions for problem type IDs  |
+| `reportStatuses` | `[EnumInfo](#enuminfo)[]` | Human-readable definitions for report status IDs |
 
 # API objects
 
 ## Basic
 
+### EnumInfo
+This object type is used to describe human readable [enum](#enums) values to the client.
+| Name          | Type     | Description                              | 
+|---------------|----------|------------------------------------------|
+| `id`          | `byte`   | Enum value                               |
+| `name`        | `string` | Meaning                                  |
+| `description` | `string` | _(optional)_ Description                 |
+| `supported`   | `bool`   | Can client use this enum in API requests |
+
 ### Member
-| Name         | Type     | Description                | 
-|--------------|----------|----------------------------|
-| `id`         | `uint32` | Member's unique ID         |
-| `userName`   | `string` | Member's user name (login) |
-| `firstName`  | `string` | Member's name              |
-| `lastName`   | `string` | Member's last name         |
+| Name         | Type     | Description                  | 
+|--------------|----------|------------------------------|
+| `id`         | `uint32` | A member's unique ID         |
+| `userName`   | `string` | A member's user name (login) |
+| `firstName`  | `string` | A member's name              |
+| `lastName`   | `string` | A member's last name         |
 
 ### Product
-| Name         | Type     | Description                                           | 
-|--------------|----------|-------------------------------------------------------|
-| `id`         | `uint32` | Product's unique ID                                   |
-| `ownerId`    | `uint32` | ID of member who created the product                  |
-| `name`       | `string` | Name of the product                                   |
-| `isFinished` | `bool`   | Indicates that testing this product has been finished |
+| Name         | Type     | Description                                              | 
+|--------------|----------|----------------------------------------------------------|
+| `id`         | `uint32` | A product's unique ID                                    |
+| `ownerId`    | `uint32` | An ID of member who created the product                  |
+| `name`       | `string` | A name of the product                                    |
+| `isFinished` | `bool`   | Indicates that testing this product has been finished    |
 
 ### Report
-| Name           | Type     | Description                                    | 
-|----------------|----------|------------------------------------------------|
-| `id`           | `uint32` | A report's unique ID                           |
-| `productId`    | `uint32` | An ID of the product the report belongs to     |
-| `creatorId`    | `uint32` | An ID of member who created the report         |
-| `creationTime` | `int64`  | Creation timestamp (unixtime)                  |
-| `severity`     | `byte`   | A bug's [severity](#Severity)                  |
-| `problemType`  | `byte`   | A bug's [problem type](#problem-types)         |
-| `title`        | `string` | Report title — short description of the bug.   |
-| `steps`        | `string` | _(optional)_ Steps to reproduce the bug.       |
-| `actual`       | `string` | _(optional)_ Actual behavior.                  |
-| `expected`     | `string` | _(optional)_ Expected behavior.                |
+| Name           | Type                    | Description                                                   | 
+|----------------|-------------------------|---------------------------------------------------------------|
+| `id`           | `uint32`                | A report's unique ID                                          |
+| `productId`    | `uint32`                | An ID of the product the report belongs to                    |
+| `creatorId`    | `uint32`                | An ID of member who created the report                        |
+| `created`      | `int64`                 | Creation timestamp (unixtime)                                 |
+| `severity`     | `[EnumInfo](#enuminfo)` | An object describing the bug's [severity](#Severity)          |
+| `problemType`  | `[EnumInfo](#enuminfo)` | An object describing the bug's [problem type](#problem-types) |
+| `status`       | `[EnumInfo](#enuminfo)` | An object describing the report [status](#report-statuses)    |
+| `title`        | `string`                | Report title — short description of the bug.                  |
+| `steps`        | `string`                | _(optional)_ Steps to reproduce the bug.                      |
+| `actual`       | `string`                | _(optional)_ Actual behavior.                                 |
+| `expected`     | `string`                | _(optional)_ Expected behavior.                               |
 
 ## Enums
+The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.
 
 ### Severity
-| Value  | Meaning       | 
-|--------|---------------|
-| `1`    | low           |
-| `2`    | medium        |
-| `3`    | high          |
-| `4`    | critical      |
-| `5`    | vulnerability |
+| ID    | Name          |  Description                                                                                                                                   |
+|-------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `1`   | Low           | Bugs that don't violate business logic, with an insignificant effect on the product overall, problems reflecting elements and data on the screen, grammatical and spelling mistakes. |
+| `2`   | Medium        | The bug doesn't critically affect the product but causes a major inconvenience. The feature doesn't work correctly, but there is a workaround. |
+| `3`   | High          | A feature isn't working properly or at all. For example, messages can't be sent, or photos can't be deleted.                                   |
+| `4`   | Critical      | Bugs that inhibit any further work from the app or further testing; crashes, freezing, loss of or damage to user data.                         |
+| `5`   | Vulnerability | Such reports visible only for the report creator and the product owner.                                                                        |
 
 ### Problem types
-| Value  | Meaning                 | 
-|--------|-------------------------|
-| `1`    | suggestion              |
-| `2`    | app crashed             |
-| `3`    | app froze               |
-| `4`    | function not working    |
-| `5`    | data damage             |
-| `6`    | performance             |
-| `7`    | aesthetic discrepancies |
-| `8`    | typo                    |
+| ID    | Name                    | Description                                                                                           | Supported |
+|-------|-------------------------|-------------------------------------------------------------------------------------------------------|-----------|
+| `1`   | Suggestion              | Changes which you think should be made to improve the user experience.                                | true      | 
+| `2`   | App crashes             | The app crashes, inhibiting any further work or testing.                                              | true      | 
+| `3`   | App froze               | The app freezes, inhibiting any further work or testing.                                              | true      | 
+| `4`   | Function not working    | Function not working or improperly working. For example, not sending messages or not deleting photos. | true      | 
+| `5`   | Data damage             | User data fully or partially lost or corrupted.                                                       | true      | 
+| `6`   | Performance             | User action response time.                                                                            | true      | 
+| `7`   | Aesthetic discrepancies | Problems with element and data display on the screen.                                                 | true      | 
+| `8`   | Typo                    | Grammatical, orthographic or syntactical mistakes, or problems in localization.                       | true      | 
+
+### Report statuses
+| ID    | Name              | Description                                                                                                                  | Supported |
+|-------|----------------- -|------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `0`   | Open              |                                                                                                                              | false     |
+| `1`   | In progress       | The developer has begun solving this issue.                                                                                  | true      |
+| `2`   | Fixed             | The problem has been fixed. Beta-testers currently aren't able to check this. The changes will appear in the newest version. | true      |
+| `3`   | Declined          | The report is denied due to the problem being entered for the wrong product or not being a bug.                              | true      |
+| `4`   | Under review      | A decision about this report will be made later.                                                                             | true      |
+| `5`   | Closed            | The developer indicated that the issue has been resolved.                                                                    | false     |
+| `6`   | Blocked           | The problem isn't related to the code of the tested product and occurs on the operating system API, library, side.           | true      |
+| `7`   | Reopened          | The problem hasn't been fixed completely or at all. Please return to the report review.                                      | true      |
+| `8`   | Cannot reproduce  | The problem isn't reproduced when following the steps in the report and according to the conditions described.               | true      |
+| `9`   | Deferred          | The report has been accepted, but the issue described in it will be fixed much later.                                        | true      |
+| `10`  | Needs correction  | There is insufficient information to localize the problem. The report wasn't created according to the rules.                 | true      |
+| `11`  | Ready for testing | The problem has been fixed in the current version. The author of the report must check that this is accurate.                | true      |
+| `12`  | Verified          | The issue has been fixed in the latest version.                                                                              | true      |
+| `13`  | Won't be fixed    | The report describes a problem that can't be solved due to certain reasons.                                                  | true      |
+| `14`  | Outdated          | The report describes a problem that was temporary or that was eliminated after a redesign, refactoring or other work.        | true      |
+| `15`  | Duplicate         | The report is a duplicate of an earlier bug report. The issue has already been described.                                    | true      |
 
 ## Errors
+The data below is stored in the `ELOR.ProjectB/Core/Exceptions/ServerException.cs` file.
+
 | Code  |  Message                                                                                                                                                                     | 
 |-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `1`   |  `Internal server error`<br>Returned if an unknown error occurred in the server. The `message` may contain additional information about the error.                           |
@@ -289,3 +357,5 @@ If authorized member pass a different `creator_id` ID than his own with `severit
 | `15`  |  `Access denied`                                                                                                                                                             |
 | `16`  |  `Permission to perform this action is denied`                                                                                                                               |
 | `20`  |  `Testing of this product is over`                                                                                                                                           |
+| `40`  |  `Can't change the report status to a value you passed`                                                                                                                      |
+| `41`  |  `This status requires a comment`                                                                                                                                            |

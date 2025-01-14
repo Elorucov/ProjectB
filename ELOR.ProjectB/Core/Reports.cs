@@ -3,6 +3,8 @@ using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
+using static Mysqlx.Error.Types;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ELOR.ProjectB.Core {
     public static class Reports {
@@ -31,14 +33,32 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
-        public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, bool extended) {
+        public static async Task<uint> ChangeStatusAsync(uint authorizedMemberId, uint reportId, byte newStatus, string comment) {
+            string sql = $"CALL updateStatus(@mid, @rid, @st, @cm);";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@rid", reportId);
+            cmd1.Parameters.AddWithValue("@st", newStatus);
+            cmd1.Parameters.AddWithValue("@cm", comment);
+            object resp = await cmd1.ExecuteScalarAsync();
+            cmd1.Dispose();
+
+            if (resp != null) {
+                return Convert.ToUInt32(resp);
+            } else {
+                throw new ApplicationException("unable to execute DB procedure, try later");
+            }
+        }
+
+        public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, byte status, bool extended) {
             if (creatorId > 0 && severity == 5 && authorizedMemberId != creatorId) throw new AccessException();
-            
+            bool dontGetVulnerabilities = severity == 0 && authorizedMemberId != creatorId;
+
             string sql = string.Empty;
             if (!extended) {
-                sql = $"SELECT id, product_id, creator_id, time, title, severity, problem_type FROM reports";
+                sql = dontGetVulnerabilities ? "SELECT r.id, r.product_id, r.creator_id, r.time, r.title, r.severity, r.problem_type, r.status FROM reports r JOIN products p ON r.product_id = p.id" : "SELECT id, product_id, creator_id, time, title, severity, problem_type FROM reports";
             } else {
-                sql = $"SELECT * FROM reports";
+                sql = dontGetVulnerabilities ? "SELECT r.* FROM reports r JOIN products p ON r.product_id = p.id" : "SELECT * FROM reports";
             }
 
             List<string> filters = new List<string>();
@@ -47,7 +67,8 @@ namespace ELOR.ProjectB.Core {
             if (productId > 0) filters.Add($"product_id = {productId}");
             if (severity > 0) filters.Add($"severity = {severity}");
             if (problemType > 0) filters.Add($"problem_type = {problemType}");
-            if (severity == 0 && authorizedMemberId != creatorId) filters.Add($"NOT(severity = 5 AND creator_id != {authorizedMemberId})");
+            if (status > 0) filters.Add($"status = {status}");
+            if (dontGetVulnerabilities) filters.Add($"NOT (r.severity = 5 AND (r.creator_id != {authorizedMemberId} AND p.owner_id != {authorizedMemberId}));");
 
             if (filters.Count > 0) sql +=  " WHERE " + string.Join(" AND ", filters);
 
@@ -72,17 +93,19 @@ namespace ELOR.ProjectB.Core {
                     string expected = extended ? resp.GetString(7) : null;
                     byte severity2 = resp.GetByte(extended ? 8 : 5);
                     byte problemType2 = resp.GetByte(extended ? 9 : 6);
+                    byte status2 = resp.GetByte(extended ? 10 : 7);
                     reports.Add(new ReportDTO {
                         Id = reportId,
                         ProductId = productId2,
                         CreatorId = creatorId2,
-                        CreationTime = creationTime,
+                        Created = creationTime,
                         Title = title,
                         Steps = steps,
                         Actual = actual,
                         Expected = expected,
-                        Severity = severity2,
-                        ProblemType = problemType2
+                        Severity = StaticValues.SeverityList.ToAPIObject(severity2, extended),
+                        ProblemType = StaticValues.ProblemTypesList.ToAPIObject(problemType2, extended),
+                        Status = StaticValues.BugreportStatuses.ToAPIObject(status2, extended)
                     });
                     if (extended && !mids.Contains(creatorId2)) mids.Add(creatorId2);
                     if (extended && !pids.Contains(productId2)) pids.Add(productId2);
