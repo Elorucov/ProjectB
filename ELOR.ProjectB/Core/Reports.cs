@@ -51,7 +51,6 @@ namespace ELOR.ProjectB.Core {
         }
 
         public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, byte status, bool extended) {
-            if (creatorId > 0 && severity == 5 && authorizedMemberId != creatorId) throw new AccessException();
             bool dontGetVulnerabilities = severity == 0 && authorizedMemberId != creatorId;
 
             string sql = string.Empty;
