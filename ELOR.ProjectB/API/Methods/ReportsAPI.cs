@@ -18,6 +18,17 @@ namespace ELOR.ProjectB.API.Methods {
             return Results.Json(new APIResponse<uint>(reportId));
         }
 
+        public static async Task<IResult> ChangeSeverityAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint reportId = request.ValidateAndGetUIntValue("report_id");
+            byte severity = request.ValidateAndGetByteConstValue("severity", StaticValues.SeverityList.GetKeys(), "Check server.getEnumStrings method first");
+            request.TryGetParameter("comment", out string comment);
+
+            uint newCommentId = await Reports.ChangeSeverityAsync(mid, reportId, severity, comment);
+            return Results.Json(new APIResponse<uint>(newCommentId));
+        }
+
         public static async Task<IResult> ChangeStatusAsync(HttpRequest request) {
             uint mid = request.EnsureAuthorized();
 

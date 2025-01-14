@@ -33,6 +33,8 @@ namespace ELOR.ProjectB.Core.Exceptions {
             { 20, "Testing of this product is over" },
             { 40, "Can't change the report status to a value you passed" },
             { 41, "This status requires a comment" },
+            { 42, "Can't change the report severity to a value you passed" },
+            { 43, "You cannot change the report severity because the product owner has set it himself" },
         });
     }
 }

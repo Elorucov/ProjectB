@@ -11,6 +11,7 @@
   * [products.create](#productscreate)
   * [products.get](#productsget)
   * [products.setAsFinished](#productssetasfinished)
+  * [reports.changeSeverity](#reportschangeseverity)
   * [reports.changeStatus](#reportschangestatus)
   * [reports.create](#reportscreate)
   * [reports.delete](#reportsdelete)
@@ -82,7 +83,10 @@ Example of an error response:
 ```
 
 # API methods
-**ProjectB** has API methods described below. Please note: parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
+**ProjectB** has API methods described below.
+
+> [!NOTE]
+> Parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
 
 ## auth.signIn
 This method authorizes the member. 
@@ -182,6 +186,25 @@ If authorized member is a owner of the product, the method will return `true`.
 ### Errors
 If authorized member is not a owner of the product, the method will return an error `16`.<br>If the member pass an ID of non-existent product, the server will return an error `11`.
 
+## reports.changeSeverity
+This method changes the severity for report.
+
+> [!NOTE]
+> Once the product owner has changed the severity, the report author will no longer be able to change it.
+
+### Parameters
+| Name          | Type     | Description               | 
+|---------------|----------|---------------------------|
+| `report_id`*  |  uint32  | An ID of the report       |
+| `severity`*   |  byte    | The severity ID to assign |
+| `comment`     |  string  | A comment.                |
+
+### Response
+An ID of the created comment (`uint32`).
+
+### Errors
+This method may return error with these codes: `11`, `16`, `42`, `43`.
+
 ## reports.changeStatus
 This method changes the status for report.
 
@@ -232,7 +255,10 @@ This method deletes the report.
 This method may return error with these codes: `11`, `16`.
 
 ## reports.get
-This method return reports. Please note: the server does not return reports with vulnerabilities that are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member.
+This method return reports.
+
+> [!NOTE]
+> The server does not return reports with vulnerabilities that are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member.
 
 ### Parameters
 | Name            | Type     | Description                                                                                        | 
@@ -373,3 +399,5 @@ The data below is stored in the `ELOR.ProjectB/Core/Exceptions/ServerException.c
 | `20`  |  `Testing of this product is over`                                                                                                                                           |
 | `40`  |  `Can't change the report status to a value you passed`                                                                                                                      |
 | `41`  |  `This status requires a comment`                                                                                                                                            |
+| `42`  |  `Can't change the report severity to a value you passed`                                                                                                                    |
+| `43`  |  `You cannot change the report severity because the product owner has set it himself`                                                                                        |

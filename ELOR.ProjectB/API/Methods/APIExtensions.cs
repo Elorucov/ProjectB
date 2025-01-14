@@ -57,6 +57,8 @@ namespace ELOR.ProjectB.API.Methods {
                 case Constants.DB_ERRNUM_PERMISSION_DENIED: return (16, ServerException.DefinedErrors[16]);
                 case Constants.DB_ERRNUM_WRONG_STATUS: return (40, ServerException.DefinedErrors[40]);
                 case Constants.DB_ERRNUM_STATUS_COMMENT_REQUIRED: return (41, ServerException.DefinedErrors[41]);
+                case Constants.DB_ERRNUM_REPORT_AUTHOR_CANNOT_CHANGE_SEVERITY: return (43, ServerException.DefinedErrors[43]);
+                case Constants.DB_ERRNUM_WRONG_SEVERITY: return (42, ServerException.DefinedErrors[42]);
                 case Constants.DB_ERRNUM_TEST: return (1, $"{ServerException.DefinedErrors[1]}: this is a test error from MySQL");
                 default: return (1, $"{ServerException.DefinedErrors[1]}: {sqlex.Message}");
             }

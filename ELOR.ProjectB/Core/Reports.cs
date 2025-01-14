@@ -33,6 +33,23 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
+        public static async Task<uint> ChangeSeverityAsync(uint authorizedMemberId, uint reportId, byte newSeverity, string comment) {
+            string sql = $"CALL updateSeverity(@mid, @rid, @sv, @cm);";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@rid", reportId);
+            cmd1.Parameters.AddWithValue("@sv", newSeverity);
+            cmd1.Parameters.AddWithValue("@cm", comment);
+            object resp = await cmd1.ExecuteScalarAsync();
+            cmd1.Dispose();
+
+            if (resp != null) {
+                return Convert.ToUInt32(resp);
+            } else {
+                throw new ApplicationException("unable to execute DB procedure, try later");
+            }
+        }
+
         public static async Task<uint> ChangeStatusAsync(uint authorizedMemberId, uint reportId, byte newStatus, string comment) {
             string sql = $"CALL updateStatus(@mid, @rid, @st, @cm);";
             MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
