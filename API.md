@@ -33,15 +33,17 @@
 
 To call a API method you need to make POST or GET request to the specified URL using HTTPS protocol:
 
-> **HOST**/**METHOD_NAME**?**PARAMETERS**
+> **HOST**`/`**METHOD_NAME**`?`**PARAMETERS**
 
 **HOST** — the address of the server where ProjectB is running. By default, if running locally, `http://localhost:7575`
+
 **METHOD_NAME** — method name from the list of [API functions](#api-methods),
+
 **PARAMETERS** — parameters of the corresponding API method. You can send parameters as query, or in request body as `x-www-form-urlencoded` or `form-data` format.
 
 API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method).
 
-Example:
+Example of the request:
 ```
 http://localhost:7575/auth.signIn?login=myusername&password=mypassword
 ```
@@ -79,7 +81,7 @@ Example of an error response:
 ```
 
 # API methods
-ProjectB has API methods described below. Please note: parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
+**ProjectB** has API methods described below. Please note: parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
 
 ## auth.signIn
 This method authorizes the member. 
@@ -145,7 +147,7 @@ This method creates a product.
 | `name`*  |  string  | A new product's name. It's length must be >= 2 and <= 64 |
 
 ### Response
-An ID of created product ( uint32 )
+An ID of created product (`uint32`)
 
 ## products.get
 This method returns products.
@@ -190,7 +192,7 @@ This method changes the status for report.
 | `comment`     |  string  | A comment. May be mandatory depends of status                              |
 
 ### Response
-An ID of the created comment ( uint32 ).
+An ID of the created comment (`uint32`).
 
 ### Errors
 This method may return error with these codes: `11`, `16`, `40`, `41`.
@@ -209,7 +211,7 @@ This method creates a new bug report for the product.
 | `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                     |
 
 ### Response
-An ID of the created report ( uint32 ).
+An ID of the created report (`uint32`).
 
 ### Errors
 If client pass an ID of product whose testing has been finished, the server will return an error `20`.
@@ -285,7 +287,7 @@ This object type is used to describe human readable [enum](#enums) values to the
 | `id`           |  uint32                 | A report's unique ID                                          |
 | `productId`    |  uint32                 | An ID of the product the report belongs to                    |
 | `creatorId`    |  uint32                 | An ID of member who created the report                        |
-| `created`      |  int64                  | Creation timestamp (unixtime)                                 |
+| `created`      |  int64                  | Creation time (unixtime)                                      |
 | `severity`     |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#Severity)          |
 | `problemType`  |  [EnumInfo](#enuminfo)  | An object describing the bug's [problem type](#problem-types) |
 | `status`       |  [EnumInfo](#enuminfo)  | An object describing the report [status](#report-statuses)    |
@@ -298,17 +300,17 @@ This object type is used to describe human readable [enum](#enums) values to the
 The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.
 
 ### Severity
-| ID    | Name          |  Description                                                                                                                                   |
-|-------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| `1`   | Low           | Bugs that don't violate business logic, with an insignificant effect on the product overall, problems reflecting elements and data on the screen, grammatical and spelling mistakes. |
-| `2`   | Medium        | The bug doesn't critically affect the product but causes a major inconvenience. The feature doesn't work correctly, but there is a workaround. |
-| `3`   | High          | A feature isn't working properly or at all. For example, messages can't be sent, or photos can't be deleted.                                   |
-| `4`   | Critical      | Bugs that inhibit any further work from the app or further testing; crashes, freezing, loss of or damage to user data.                         |
-| `5`   | Vulnerability | Such reports visible only for the report creator and the product owner.                                                                        |
+| ID    | Name          |  Description                                                                                                                                   | Supported |
+|-------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `1`   | Low           | Bugs that don't violate business logic, with an insignificant effect on the product overall, problems reflecting elements and data on the screen, grammatical and spelling mistakes. | true      |
+| `2`   | Medium        | The bug doesn't critically affect the product but causes a major inconvenience. The feature doesn't work correctly, but there is a workaround. | true      |
+| `3`   | High          | A feature isn't working properly or at all. For example, messages can't be sent, or photos can't be deleted.                                   | true      |
+| `4`   | Critical      | Bugs that inhibit any further work from the app or further testing; crashes, freezing, loss of or damage to user data.                         | true      |
+| `5`   | Vulnerability | Such reports visible only for the report creator and the product owner.                                                                        | true      |
 
 ### Problem types
 | ID    | Name                    | Description                                                                                           | Supported |
-|-------|-------------------------|-------------------------------------------------------------------------------------------------------|-----------|
+|-------|-------------------------|-------------------------------------------------------------------------------------------------------| Supported |
 | `1`   | Suggestion              | Changes which you think should be made to improve the user experience.                                | true      | 
 | `2`   | App crashes             | The app crashes, inhibiting any further work or testing.                                              | true      | 
 | `3`   | App froze               | The app freezes, inhibiting any further work or testing.                                              | true      | 
