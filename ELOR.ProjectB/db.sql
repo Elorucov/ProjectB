@@ -278,8 +278,7 @@ CREATE TABLE `members` (
 
 CREATE TABLE `member_credentials` (
   `member_id` int UNSIGNED NOT NULL,
-  `password_hash` varchar(64) NOT NULL,
-  FOREIGN KEY (member_id) REFERENCES members (id)
+  `password_hash` varchar(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE `products` (

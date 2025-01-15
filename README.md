@@ -5,7 +5,7 @@ A simple self-hosted bug tracker inspired by [VK's bug-tracker](https://vk.com/t
 The project was created as one example of a backend service in order to improve my backend, API and database experience (MySQL for now) and demonstrate it in my job search. And it took me a little over a week to develop from scratch. 😅
 
 ## Getting started
-1. Install MySQL (version 8 or newer) and create a database.
+1. Install MySQL (version 8 or newer) and create a database (default name is `projectb`, encoding `utf8mb4_0900_ai_ci`).
 2. Write the name of the created database, as well as the connection parameters to the database, in the `btconfig.json` file.
 3. Start the server. By default, the server listens on port `7575`.
 4. Make the following query: `http://localhost:7575/server.init`. The server will create tables in the database and the first member, and return `{"response":true}`. The login and password of the first member are specified in the `btconfig.json` file.

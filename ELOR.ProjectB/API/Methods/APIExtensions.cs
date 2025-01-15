@@ -3,8 +3,6 @@ using ELOR.ProjectB.API.DTO;
 using ELOR.ProjectB.Core;
 using MySql.Data.MySqlClient;
 using System.Text;
-using Google.Protobuf.WellKnownTypes;
-using static Mysqlx.Expect.Open.Types.Condition.Types;
 
 namespace ELOR.ProjectB.API.Methods {
     public static class APIExtensions {

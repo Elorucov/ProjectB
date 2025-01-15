@@ -1,10 +1,11 @@
 ﻿using ELOR.ProjectB.Core.Exceptions;
-using ELOR.ProjectB.Core;
 using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
 
 namespace ELOR.ProjectB.Core {
     public static class Invites {
+
+        // TODO: procedure
         public static async Task<string> CreateAsync(uint creatorId, string userName) {
             MySqlCommand cmd0 = new MySqlCommand(@"SELECT id FROM members WHERE user_name = @uname", DBClient.Connection);
             cmd0.Parameters.AddWithValue("@uname", userName);
@@ -45,6 +46,7 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
+        // TODO: procedure
         public static async Task<Tuple<uint, string>> RegisterUserByCodeAsync(string code, string password, string firstName, string lastName) {
             MySqlCommand cmd1 = new MySqlCommand(@"SELECT user_name FROM invites WHERE code = @code AND invited_member_id = 0;", DBClient.Connection);
             cmd1.Parameters.AddWithValue("@code", code);
