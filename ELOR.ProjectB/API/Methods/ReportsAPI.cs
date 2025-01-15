@@ -3,21 +3,6 @@ using ELOR.ProjectB.Core;
 
 namespace ELOR.ProjectB.API.Methods {
     public class ReportsAPI {
-        public static async Task<IResult> CreateAsync(HttpRequest request) {
-            uint mid = request.EnsureAuthorized();
-
-            uint productId = request.ValidateAndGetUIntValue("product_id");
-            string title = request.ValidateAndGetValue("title", 0, 128);
-            string steps = request.ValidateAndGetValue("steps", 0, 4096);
-            string actual = request.ValidateAndGetValue("actual", 0, 2048);
-            string expected = request.ValidateAndGetValue("expected", 0, 2048);
-            byte severity = request.ValidateAndGetByteConstValue("severity", StaticValues.SeverityList.GetKeys(), "Check server.getEnumStrings method first");
-            byte problemType = request.ValidateAndGetByteConstValue("problem_type", StaticValues.ProblemTypesList.GetKeys(), "Check server.getEnumStrings method first");
-
-            uint reportId = await Reports.CreateAsync(mid, productId, title, steps, actual, expected, severity, problemType);
-            return Results.Json(new APIResponse<uint>(reportId));
-        }
-
         public static async Task<IResult> ChangeSeverityAsync(HttpRequest request) {
             uint mid = request.EnsureAuthorized();
 
@@ -38,6 +23,31 @@ namespace ELOR.ProjectB.API.Methods {
 
             uint newCommentId = await Reports.ChangeStatusAsync(mid, reportId, status, comment);
             return Results.Json(new APIResponse<uint>(newCommentId));
+        }
+
+        public static async Task<IResult> CreateAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint productId = request.ValidateAndGetUIntValue("product_id");
+            string title = request.ValidateAndGetValue("title", 0, 128);
+            string steps = request.ValidateAndGetValue("steps", 0, 4096);
+            string actual = request.ValidateAndGetValue("actual", 0, 2048);
+            string expected = request.ValidateAndGetValue("expected", 0, 2048);
+            byte severity = request.ValidateAndGetByteConstValue("severity", StaticValues.SeverityList.GetKeys(), "Check server.getEnumStrings method first");
+            byte problemType = request.ValidateAndGetByteConstValue("problem_type", StaticValues.ProblemTypesList.GetKeys(), "Check server.getEnumStrings method first");
+
+            uint reportId = await Reports.CreateAsync(mid, productId, title, steps, actual, expected, severity, problemType);
+            return Results.Json(new APIResponse<uint>(reportId));
+        }
+
+        public static async Task<IResult> CreateCommentAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint reportId = request.ValidateAndGetUIntValue("report_id");
+            string comment = request.ValidateAndGetValue("comment", 0, 1024);
+
+            uint commentId = await Reports.CreateCommentAsync(mid, reportId, comment);
+            return Results.Json(new APIResponse<uint>(commentId));
         }
 
         public static async Task<IResult> DeleteAsync(HttpRequest request) {

@@ -27,6 +27,7 @@ namespace ELOR.ProjectB.API {
             app.Map("/reports.changeSeverity", ReportsAPI.ChangeSeverityAsync);
             app.Map("/reports.changeStatus", ReportsAPI.ChangeStatusAsync);
             app.Map("/reports.create", ReportsAPI.CreateAsync);
+            app.Map("/reports.createComment", ReportsAPI.CreateCommentAsync);
             app.Map("/reports.delete", ReportsAPI.DeleteAsync);
             app.Map("/reports.edit", ReportsAPI.EditAsync);
             app.Map("/reports.get", ReportsAPI.GetAsync);

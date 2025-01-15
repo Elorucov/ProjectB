@@ -14,6 +14,7 @@
   * [reports.changeSeverity](#reportschangeseverity)
   * [reports.changeStatus](#reportschangestatus)
   * [reports.create](#reportscreate)
+  * [reports.createComment](#reportscreatecomment)
   * [reports.delete](#reportsdelete)
   * [reports.edit](#reportsedit)
   * [reports.get](#reportsget)
@@ -241,6 +242,22 @@ An ID of the created report (`uint32`).
 ### Errors
 If client pass an ID of product whose testing has been finished, the server will return an error `20`.
 
+## reports.createComment
+This method creates a comment to the bugreport
+
+### Parameters
+| Name            | Type     | Description                                               | 
+|-----------------|----------|-----------------------------------------------------------|
+| `report_id`*    |  uint32  | An ID of the report for which a comment should be created |
+| `comment`*      |  string  | A comment. It's length must be <= 1024                    |
+
+
+### Response
+An ID of the created comment (`uint32`).
+
+### Errors
+This method may return error with these codes: `11`.
+
 ## reports.delete
 This method deletes the bugreport.
 
@@ -357,6 +374,7 @@ This object type is used to describe human readable [enum](#enums) values to the
 | `productId`    |  uint32                 | An ID of the product the report belongs to                    |
 | `creatorId`    |  uint32                 | An ID of member who created the report                        |
 | `created`      |  int64                  | Creation time (unixtime)                                      |
+| `updated`      |  int64?                 | Report update time (unixtime). May not exist                  |
 | `severity`     |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#Severity)          |
 | `problemType`  |  [EnumInfo](#enuminfo)  | An object describing the bug's [problem type](#problem-types) |
 | `status`       |  [EnumInfo](#enuminfo)  | An object describing the report [status](#report-statuses)    |
