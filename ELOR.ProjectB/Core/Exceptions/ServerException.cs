@@ -34,7 +34,8 @@ namespace ELOR.ProjectB.Core.Exceptions {
             { 40, "Can't change the report status to a value you passed" },
             { 41, "This status requires a comment" },
             { 42, "Can't change the report severity to a value you passed" },
-            { 43, "You cannot change the report severity because the product owner has set it himself" },
+            { 43, "You can no longer edit the report" },
+            { 44, "You can't delete the report" },
         });
     }
 }

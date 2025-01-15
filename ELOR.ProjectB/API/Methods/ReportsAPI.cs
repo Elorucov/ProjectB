@@ -49,6 +49,21 @@ namespace ELOR.ProjectB.API.Methods {
             return Results.Json(new APIResponse<bool>(result));
         }
 
+        // TODO: check and edit only these parameters that requested.
+        public static async Task<IResult> EditAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint reportId = request.ValidateAndGetUIntValue("report_id");
+            string title = request.ValidateAndGetValue("title", 0, 128);
+            string steps = request.ValidateAndGetValue("steps", 0, 4096);
+            string actual = request.ValidateAndGetValue("actual", 0, 2048);
+            string expected = request.ValidateAndGetValue("expected", 0, 2048);
+            byte problemType = request.ValidateAndGetByteConstValue("problem_type", StaticValues.ProblemTypesList.GetKeys(), "Check server.getEnumStrings method first");
+
+            bool result = await Reports.EditAsync(mid, reportId, title, steps, actual, expected, problemType);
+            return Results.Json(new APIResponse<bool>(result));
+        }
+
         public static async Task<IResult> GetAsync(HttpRequest request) {
             uint mid = request.EnsureAuthorized();
 

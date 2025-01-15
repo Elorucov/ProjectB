@@ -9,13 +9,14 @@ CREATE PROCEDURE updateStatus(
 BEGIN
     DECLARE report_creator_id INT UNSIGNED;
     DECLARE product_owner_id INT UNSIGNED;
+    DECLARE modified_by_product_owner TINYINT UNSIGNED;
     DECLARE current_status TINYINT UNSIGNED;
     DECLARE product_id INT UNSIGNED;
     DECLARE comment_id INT UNSIGNED;
 
     -- Проверка существования отчёта
-    SELECT r.creator_id, r.status, r.product_id, p.owner_id
-    INTO report_creator_id, current_status, product_id, product_owner_id
+    SELECT r.creator_id, r.modified_by_product_owner, r.status, r.product_id, p.owner_id
+    INTO report_creator_id, modified_by_product_owner, current_status, product_id, product_owner_id
     FROM reports r
     JOIN products p ON r.product_id = p.id
     WHERE r.id = report_id;
@@ -27,6 +28,11 @@ BEGIN
     -- Проверка прав доступа
     IF auth_mid != report_creator_id AND auth_mid != product_owner_id THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Permission denied', MYSQL_ERRNO = 7503;
+    END IF;
+
+    -- Не дать менять автору отчёта менять статус, если владелец продукта уже что-то с ним сделал
+    IF auth_mid = report_creator_id AND modified_by_product_owner = 1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Report creator cannot edit this', MYSQL_ERRNO = 7507;
     END IF;
 
     -- Если статусы одинаковые
@@ -55,9 +61,15 @@ BEGIN
     END IF;
 
     -- Обновление статуса отчёта
-    UPDATE reports
-    SET status = new_status
-    WHERE id = report_id;
+    IF auth_mid = report_creator_id THEN
+        UPDATE reports
+        SET status = new_status, updated_time = UNIX_TIMESTAMP(NOW())
+        WHERE id = report_id;
+    ELSEIF auth_mid = product_owner_id THEN
+        UPDATE reports
+        SET status = new_status, updated_time = UNIX_TIMESTAMP(NOW()), modified_by_product_owner = 1
+        WHERE id = report_id;
+    END IF;
 
     -- Добавление комментария
     INSERT INTO report_comments (report_id, creator_id, time, new_status, comment)

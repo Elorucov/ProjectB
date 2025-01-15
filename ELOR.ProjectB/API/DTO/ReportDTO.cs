@@ -4,6 +4,7 @@
         public uint ProductId { get; init; }
         public uint CreatorId { get; init; }
         public long Created { get; init; }
+        public long? Updated { get; init; }
         public EnumInfoDTO Severity { get; init; }
         public EnumInfoDTO ProblemType { get; init; }
         public EnumInfoDTO Status { get; init; }

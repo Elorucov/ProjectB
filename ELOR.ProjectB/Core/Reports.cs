@@ -3,11 +3,10 @@ using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
-using static Mysqlx.Error.Types;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ELOR.ProjectB.Core {
     public static class Reports {
+        // TODO: procedure
         public static async Task<uint> CreateAsync(uint creatorId, uint productId, string title, string text, string actual, string expected, byte severity, byte problemType) {
             bool isFinished = await Products.CheckIsFinishedAsync(productId);
             if (isFinished) throw new FinishedProductException();
@@ -82,12 +81,32 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
+        public static async Task<bool> EditAsync(uint authorizedMemberId, uint reportId, string title, string text, string actual, string expected, byte problemType) {
+            string sql = $"CALL editReport(@mid, @rid, @tle, @txt, @act, @exp, @pt);";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@rid", reportId);
+            cmd1.Parameters.AddWithValue("@tle", title);
+            cmd1.Parameters.AddWithValue("@txt", text);
+            cmd1.Parameters.AddWithValue("@act", actual);
+            cmd1.Parameters.AddWithValue("@exp", expected);
+            cmd1.Parameters.AddWithValue("@pt", problemType);
+            int resp = await cmd1.ExecuteNonQueryAsync();
+            cmd1.Dispose();
+
+            if (resp > 0) {
+                return true;
+            } else {
+                throw new ApplicationException("unable to execute DB procedure, try later");
+            }
+        }
+
         public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, byte status, bool extended) {
             bool dontGetVulnerabilities = severity == 0 && authorizedMemberId != creatorId;
 
             string sql = string.Empty;
             if (!extended) {
-                sql = dontGetVulnerabilities ? "SELECT r.id, r.product_id, r.creator_id, r.time, r.title, r.severity, r.problem_type, r.status FROM reports r JOIN products p ON r.product_id = p.id" : "SELECT id, product_id, creator_id, time, title, severity, problem_type FROM reports";
+                sql = dontGetVulnerabilities ? "SELECT r.id, r.product_id, r.creator_id, r.time, r.title, r.severity, r.problem_type, r.status, r.updated_time FROM reports r JOIN products p ON r.product_id = p.id" : "SELECT id, product_id, creator_id, time, title, severity, problem_type FROM reports";
             } else {
                 sql = dontGetVulnerabilities ? "SELECT r.* FROM reports r JOIN products p ON r.product_id = p.id" : "SELECT * FROM reports";
             }
@@ -125,11 +144,13 @@ namespace ELOR.ProjectB.Core {
                     byte severity2 = resp.GetByte(extended ? 8 : 5);
                     byte problemType2 = resp.GetByte(extended ? 9 : 6);
                     byte status2 = resp.GetByte(extended ? 10 : 7);
+                    long? updatedTime = resp.IsDBNull(extended ? 12 : 8) ? null : (long)resp.GetDecimal(extended ? 12 : 8);
                     reports.Add(new ReportDTO {
                         Id = reportId,
                         ProductId = productId2,
                         CreatorId = creatorId2,
                         Created = creationTime,
+                        Updated = updatedTime,
                         Title = title,
                         Steps = steps,
                         Actual = actual,

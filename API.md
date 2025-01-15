@@ -39,7 +39,7 @@ To call a API method you need to make POST or GET request to the specified URL u
 
 **HOST** — the address of the server where ProjectB is running. By default, if running locally, `http://localhost:7575`
 
-**METHOD_NAME** — method name from the list of [API functions](#api-methods),
+**METHOD_NAME** — method name from the list of [API functions](#api-methods).
 
 **PARAMETERS** — parameters of the corresponding API method. You can send parameters as query, or in request body as `x-www-form-urlencoded` or `form-data` format.
 
@@ -241,7 +241,7 @@ An ID of the created report (`uint32`).
 If client pass an ID of product whose testing has been finished, the server will return an error `20`.
 
 ## reports.delete
-This method deletes the report.
+This method deletes the bugreport.
 
 ### Parameters
 | Name          | Type     | Description                                                                | 
@@ -252,7 +252,25 @@ This method deletes the report.
 `true`, if success.
 
 ### Errors
-This method may return error with these codes: `11`, `16`.
+This method may return error with these codes: `11`, `16`, `44`.
+
+## reports.edit
+This method edits the bugreport.
+
+### Parameters
+| Name            | Type     | Description                                                                | 
+|-----------------|----------|----------------------------------------------------------------------------|
+| `report_id`*    |  uint32  | An ID of the report to be edited                                           |
+| `title`*        |  string  | Report title — short description of the bug. It's length must be <= 128    |
+| `steps`*        |  string  | Steps to reproduce the bug. It's length must be <= 4096                    |
+| `actual`*       |  string  | Actual behavior. It's length must be <= 2048                               |
+| `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                     |
+
+### Response
+`true`, if success.
+
+### Errors
+This method may return error with these codes: `11`, `16`, `43`.
 
 ## reports.get
 This method return reports.
@@ -263,7 +281,7 @@ This method return reports.
 ### Parameters
 | Name            | Type     | Description                                                                                        | 
 |-----------------|----------|----------------------------------------------------------------------------------------------------|
-| `creator_id`    |  uint32  | Return only reports created by `creator_id`.                                                       |
+| `creator_id`    |  uint32  | Return only reports created by `creator_id`                                                        |
 | `product_id`    |  uint32  | Return only reports created for product `product_id`                                               |
 | `severity`      |  byte    | Return only reports with a specific [severity](#Severity)                                          |
 | `problem_type`  |  byte    | Return only reports with a specific [problem type](#problem-types)                                 |
@@ -280,7 +298,7 @@ An object with fields:
 | `products` |  [Product](#product)[]  | _(optional)_ An array of mentioned products |
 
 ## server.getEnumStrings
-This method returns descriptions for the ID parameters used in the bug tracker.
+This method returns descriptions for the static enum parameters used in **ProjectB**.
 
 ### Parameters
 Doesn't have
@@ -292,6 +310,15 @@ An object with fields:
 | `severities`     |  [EnumInfo](#enuminfo)[]  | Human-readable definitions for severity IDs      |
 | `problemTypes`   |  [EnumInfo](#enuminfo)[]  | Human-readable definitions for problem type IDs  |
 | `reportStatuses` |  [EnumInfo](#enuminfo)[]  | Human-readable definitions for report status IDs |
+
+## server.init
+This method initializes the database.
+
+### Parameters
+Doesn't have
+
+### Response
+`true`, if all OK, or `false`, if you try to call this method again after initialization. 
 
 # API objects
 
@@ -400,4 +427,5 @@ The data below is stored in the `ELOR.ProjectB/Core/Exceptions/ServerException.c
 | `40`  |  `Can't change the report status to a value you passed`                                                                                                                      |
 | `41`  |  `This status requires a comment`                                                                                                                                            |
 | `42`  |  `Can't change the report severity to a value you passed`                                                                                                                    |
-| `43`  |  `You cannot change the report severity because the product owner has set it himself`                                                                                        |
+| `43`  |  `You can no longer edit the report`                                                                                                                                         |
+| `44`  |  `You can't delete the report`                                                                                                                                               |

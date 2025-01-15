@@ -1,10 +1,10 @@
 ﻿using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.API.DTO;
 using ELOR.ProjectB.Core;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System.Xml.Linq;
 using MySql.Data.MySqlClient;
 using System.Text;
+using Google.Protobuf.WellKnownTypes;
+using static Mysqlx.Expect.Open.Types.Condition.Types;
 
 namespace ELOR.ProjectB.API.Methods {
     public static class APIExtensions {
@@ -26,6 +26,26 @@ namespace ELOR.ProjectB.API.Methods {
             } else if (query != null && query.ContainsKey(key)) {
                 value = query[key];
                 return true;
+            }
+            return false;
+        }
+
+        public static bool ContainsOneOfTheseParameters(this HttpRequest request, IEnumerable<string> paramNames) {
+            IFormCollection form = null;
+            var query = request.Query;
+
+            try {
+                form = request.Form;
+            } catch (InvalidOperationException) { // if client doesn't sent "multipart/form-data" or "x-www-form-urlencoded"
+
+            }
+
+            foreach (var key in paramNames) {
+                if (form != null && form.ContainsKey(key)) {
+                    return true;
+                } else if (query != null && query.ContainsKey(key)) {
+                    return true;
+                }
             }
             return false;
         }
@@ -57,8 +77,9 @@ namespace ELOR.ProjectB.API.Methods {
                 case Constants.DB_ERRNUM_PERMISSION_DENIED: return (16, ServerException.DefinedErrors[16]);
                 case Constants.DB_ERRNUM_WRONG_STATUS: return (40, ServerException.DefinedErrors[40]);
                 case Constants.DB_ERRNUM_STATUS_COMMENT_REQUIRED: return (41, ServerException.DefinedErrors[41]);
-                case Constants.DB_ERRNUM_REPORT_AUTHOR_CANNOT_CHANGE_SEVERITY: return (43, ServerException.DefinedErrors[43]);
                 case Constants.DB_ERRNUM_WRONG_SEVERITY: return (42, ServerException.DefinedErrors[42]);
+                case Constants.DB_ERRNUM_AUTHOR_CANNOT_EDIT_REPORT: return (43, ServerException.DefinedErrors[43]);
+                case Constants.DB_ERRNUM_AUTHOR_CANNOT_DELETE_REPORT: return (44, ServerException.DefinedErrors[44]);
                 case Constants.DB_ERRNUM_TEST: return (1, $"{ServerException.DefinedErrors[1]}: this is a test error from MySQL");
                 default: return (1, $"{ServerException.DefinedErrors[1]}: {sqlex.Message}");
             }
@@ -105,6 +126,10 @@ namespace ELOR.ProjectB.API.Methods {
                 throw new InvalidParameterException(sb.ToString());
             }
             return value;
+        }
+
+        public static void CheckContainsOneOfTheseParametersOrThrow(this HttpRequest request, IEnumerable<string> paramNames) {
+            if (!request.ContainsOneOfTheseParameters(paramNames)) throw new InvalidParameterException($"you must be pass one of these parameters: {string.Join(", ", paramNames)}");
         }
     }
 }
