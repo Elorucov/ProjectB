@@ -17,7 +17,9 @@
   * [reports.createComment](#reportscreatecomment)
   * [reports.delete](#reportsdelete)
   * [reports.edit](#reportsedit)
+  * [reports.editComment](#reportseditcomment)
   * [reports.get](#reportsget)
+  * [reports.getComments](#reportsgetcomments)
   * [server.getEnumStrings](#servergetenumstrings)
 * [API objects](#api-objects)
   * [Basic](#basic)
@@ -25,6 +27,7 @@
     * [Member](#member)
     * [Product](#product)
     * [Report](#report)
+    * [Comment](#comment)
   * [Enums](#enums)
     * [Severity](#severity)
     * [Problem types](#problem-types)
@@ -233,6 +236,7 @@ This method creates a new bug report for the product.
 | `title`*        |  string  | Report title — short description of the bug. It's length must be <= 128    |
 | `steps`*        |  string  | Steps to reproduce the bug. It's length must be <= 4096                    |
 | `actual`*       |  string  | Actual behavior. It's length must be <= 2048                               |
+| `expected`*     |  string  | Expected behavior. It's length must be <= 2048                             |
 | `severity`*     |  byte    | A bug's [severity](#severity)                                              |
 | `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                     |
 
@@ -256,7 +260,7 @@ This method creates a comment to the bugreport
 An ID of the created comment (`uint32`).
 
 ### Errors
-This method may return error with these codes: `11`.
+This method may return error with these codes: `11`, `16`.
 
 ## reports.delete
 This method deletes the bugreport.
@@ -282,6 +286,7 @@ This method edits the bugreport.
 | `title`*        |  string  | Report title — short description of the bug. It's length must be <= 128    |
 | `steps`*        |  string  | Steps to reproduce the bug. It's length must be <= 4096                    |
 | `actual`*       |  string  | Actual behavior. It's length must be <= 2048                               |
+| `expected`*     |  string  | Expected behavior. It's length must be <= 2048                             |
 | `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                     |
 
 ### Response
@@ -290,8 +295,24 @@ This method edits the bugreport.
 ### Errors
 This method may return error with these codes: `11`, `16`, `43`.
 
+## reports.editComment
+This method edits a comment to the bugreport
+
+### Parameters
+| Name            | Type     | Description                                               | 
+|-----------------|----------|-----------------------------------------------------------|
+| `comment_id`*   |  uint32  | An ID of the comment to be edited                         |
+| `comment`*      |  string  | A comment. It's length must be <= 1024                    |
+
+
+### Response
+`true`, if success.
+
+### Errors
+This method may return error with these codes: `11`, `16`.
+
 ## reports.get
-This method return bugreports.
+This method returns bugreports.
 
 > [!NOTE]
 > The server does not return reports with vulnerabilities that are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member.
@@ -314,6 +335,30 @@ An object with fields:
 | `items`    |  [Report](#report)[]    | An array of reports                         |
 | `members`  |  [Member](#member)[]    | _(optional)_ An array of mentioned members  |
 | `products` |  [Product](#product)[]  | _(optional)_ An array of mentioned products |
+
+## reports.getComments
+This method returns comments for the bugreport.
+
+> [!NOTE]
+> If you try to get comments for the report that is a vulnerability and are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member, the server returns an error (code `15`).
+
+### Parameters
+| Name            | Type     | Description                                                | 
+|-----------------|----------|------------------------------------------------------------|
+| `report_id`*    |  uint32  | An ID of the report for which comments should be retrieved |
+| `extended`      |  byte    | `1` — to return mentioned members array                    |
+
+
+### Response
+An object with fields:
+| Name       | Type                    | Description                                 | 
+|------------|-------------------------|---------------------------------------------|
+| `count`    |  int32                  | Comments count                              |
+| `items`    |  [Comment](#comment)[]  | An array of comments                        |
+| `members`  |  [Member](#member)[]    | _(optional)_ An array of mentioned members  |
+
+### Errors
+This method may return error with these codes: `11`, `15`.
 
 ## server.getEnumStrings
 This method returns descriptions for the static enum parameters used in **ProjectB**.
@@ -375,13 +420,25 @@ This object type is used to describe human readable [enum](#enums) values to the
 | `creatorId`    |  uint32                 | An ID of member who created the report                        |
 | `created`      |  int64                  | Creation time (unixtime)                                      |
 | `updated`      |  int64?                 | Report update time (unixtime). May not exist                  |
-| `severity`     |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#Severity)          |
+| `severity`     |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#severity)          |
 | `problemType`  |  [EnumInfo](#enuminfo)  | An object describing the bug's [problem type](#problem-types) |
 | `status`       |  [EnumInfo](#enuminfo)  | An object describing the report [status](#report-statuses)    |
 | `title`        |  string                 | Report title — short description of the bug.                  |
 | `steps`        |  string                 | _(optional)_ Steps to reproduce the bug.                      |
 | `actual`       |  string                 | _(optional)_ Actual behavior.                                 |
 | `expected`     |  string                 | _(optional)_ Expected behavior.                               |
+
+### Comment
+| Name           | Type                    | Description                                                               | 
+|----------------|-------------------------|---------------------------------------------------------------------------|
+| `id`           |  uint32                 | A comment's unique ID                                                     |
+| `reportId`     |  uint32                 | An ID of the report to which the comment was made                         |
+| `creatorId`    |  uint32                 | An ID of member who created the comment                                   |
+| `created`      |  int64                  | Creation time (unixtime)                                                  |
+| `updated`      |  int64?                 | Comment edit time (unixtime). May not exist                               |
+| `comment`      |  string                 | A comment itself. May not exist                                           |
+| `newSeverity`  |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#severity). May not exist       |
+| `newStatus`    |  [EnumInfo](#enuminfo)  | An object describing the report [status](#report-statuses). May not exist |
 
 ## Enums
 The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.

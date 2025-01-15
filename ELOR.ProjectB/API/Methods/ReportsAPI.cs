@@ -74,6 +74,16 @@ namespace ELOR.ProjectB.API.Methods {
             return Results.Json(new APIResponse<bool>(result));
         }
 
+        public static async Task<IResult> EditCommentAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint commentId = request.ValidateAndGetUIntValue("comment_id");
+            string comment = request.ValidateAndGetValue("comment", 0, 1024);
+
+            bool result = await Reports.EditCommentAsync(mid, commentId, comment);
+            return Results.Json(new APIResponse<bool>(result));
+        }
+
         public static async Task<IResult> GetAsync(HttpRequest request) {
             uint mid = request.EnsureAuthorized();
 
@@ -101,6 +111,29 @@ namespace ELOR.ProjectB.API.Methods {
                 response = new APIResponse<ReportsList>(new ReportsList(reports, reports.Count) { Members = members, Products = products });
             } else {
                 response = new APIResponse<APIList<ReportDTO>>(new APIList<ReportDTO>(reports, reports.Count));
+            }
+
+            return Results.Json(response);
+        }
+
+        public static async Task<IResult> GetCommentsAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint reportId = 0;
+            bool extended = false;
+
+            if (request.TryGetParameter("report_id", out string cidStr)) uint.TryParse(cidStr, out reportId);
+            if (request.TryGetParameter("extended", out string ext)) extended = ext == "1";
+
+            var data = await Reports.GetCommentsAsync(mid, reportId, extended);
+            var comments = data.Item1;
+            var members = data.Item2;
+
+            object response = null;
+            if (extended) {
+                response = new APIResponse<APIListWithMembers<ReportCommentDTO>>(new APIListWithMembers<ReportCommentDTO>(comments, comments.Count) { Members = members });
+            } else {
+                response = new APIResponse<APIList<ReportCommentDTO>>(new APIList<ReportCommentDTO>(comments, comments.Count));
             }
 
             return Results.Json(response);

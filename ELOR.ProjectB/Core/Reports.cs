@@ -117,6 +117,22 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
+        public static async Task<bool> EditCommentAsync(uint authorizedMemberId, uint commentId, string comment) {
+            string sql = $"CALL editComment(@mid, @cid, @cmt)";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@cid", commentId);
+            cmd1.Parameters.AddWithValue("@cmt", comment);
+            int resp = await cmd1.ExecuteNonQueryAsync();
+            cmd1.Dispose();
+
+            if (resp > 0) {
+                return true;
+            } else {
+                throw new ApplicationException("unable to execute DB procedure, try later");
+            }
+        }
+
         public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, byte status, bool extended) {
             bool dontGetVulnerabilities = severity == 0 && authorizedMemberId != creatorId;
 
@@ -184,6 +200,46 @@ namespace ELOR.ProjectB.Core {
             }
             await resp.DisposeAsync();
             return new Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>(reports, products, members);
+        }
+
+        public static async Task<Tuple<List<ReportCommentDTO>, List<MemberDTO>>> GetCommentsAsync(uint authorizedMemberId, uint reportId, bool extended) {
+            string sql = "CALL getComments(@mid, @rid)";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@rid", reportId);
+            DbDataReader resp = await cmd1.ExecuteReaderAsync();
+            cmd1.Dispose();
+
+            List<ReportCommentDTO> comments = new List<ReportCommentDTO>();
+            List<uint> mids = new List<uint>();
+            List<MemberDTO> members = null;
+            if (resp.HasRows) {
+                while (resp.Read()) {
+                    uint commentId = (uint)resp.GetDecimal(0);
+                    uint reportId2 = (uint)resp.GetDecimal(1);
+                    uint creatorId2 = (uint)resp.GetDecimal(2);
+                    long creationTime = (long)resp.GetDecimal(3);
+                    long? updatedTime = resp.IsDBNull(4) ? null : (long)resp.GetDecimal(4);
+                    byte? newSeverity = resp.IsDBNull(5) ? null : resp.GetByte(5);
+                    byte? newStatus = resp.IsDBNull(6) ? null : resp.GetByte(6);
+                    string comment = resp.IsDBNull(7) ? null : resp.GetString(7);
+                    comments.Add(new ReportCommentDTO {
+                        Id = reportId,
+                        ReportId = reportId2,
+                        CreatorId = creatorId2,
+                        Created = creationTime,
+                        Updated = updatedTime,
+                        NewSeverity = newSeverity == null ? null : StaticValues.SeverityList.ToAPIObject(newSeverity.Value),
+                        NewStatus = newStatus == null ? null : StaticValues.BugreportStatuses.ToAPIObject(newStatus.Value),
+                        Comment = comment
+                    });
+                    if (extended && !mids.Contains(creatorId2)) mids.Add(creatorId2);
+                }
+                resp.Close();
+                if (extended && mids.Count > 0) members = await Members.GetByIdAsync(mids);
+            }
+            await resp.DisposeAsync();
+            return new Tuple<List<ReportCommentDTO>, List<MemberDTO>>(comments, members);
         }
     }
 }
