@@ -15,6 +15,7 @@
   * [reports.changeStatus](#reportschangestatus)
   * [reports.create](#reportscreate)
   * [reports.delete](#reportsdelete)
+  * [reports.edit](#reportsedit)
   * [reports.get](#reportsget)
   * [server.getEnumStrings](#servergetenumstrings)
 * [API objects](#api-objects)
@@ -187,7 +188,7 @@ If authorized member is a owner of the product, the method will return `true`.
 If authorized member is not a owner of the product, the method will return an error `16`.<br>If the member pass an ID of non-existent product, the server will return an error `11`.
 
 ## reports.changeSeverity
-This method changes the severity for report.
+This method changes the severity for the bugreport.
 
 > [!NOTE]
 > Once the product owner has changed the severity, the report author will no longer be able to change it.
@@ -206,13 +207,13 @@ An ID of the created comment (`uint32`).
 This method may return error with these codes: `11`, `16`, `42`, `43`.
 
 ## reports.changeStatus
-This method changes the status for report.
+This method changes the status for the bugreport.
 
 ### Parameters
 | Name          | Type     | Description                                                                | 
 |---------------|----------|----------------------------------------------------------------------------|
 | `report_id`*  |  uint32  | An ID of the report                                                        |
-| `status`*     |  byte    | The status ID to assign                                                    |
+| `status`*     |  byte    | The [status](#report-statuses) ID to assign                                |
 | `comment`     |  string  | A comment. May be mandatory depends of status                              |
 
 ### Response
@@ -273,7 +274,7 @@ This method edits the bugreport.
 This method may return error with these codes: `11`, `16`, `43`.
 
 ## reports.get
-This method return reports.
+This method return bugreports.
 
 > [!NOTE]
 > The server does not return reports with vulnerabilities that are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member.
