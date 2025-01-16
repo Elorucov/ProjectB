@@ -32,8 +32,8 @@ Reports with vulnerabilities are available only to the report author and the pro
 Any member can leave a **comment** to any reports except for vulnerabilities. Only the report author and the product owner can leave comments to such reports. A comment is added every time the status or priority of a report changes, but without text.
 
 ## TODO
-[ ] `offset`, `count` and `rev` parameters for products.get, reports.get and reports.getComment
-[ ] Getting reports count for the one product;
-[ ] Getting reports count created by the one member (and grouped by products);
-[ ] Search reports, products and members.
-[ ] (maybe a simple web app to demonstrate?)
+- [ ] `offset`, `count` and `rev` parameters for products.get, reports.get and reports.getComment
+- [ ] Getting reports count for the one product;
+- [ ] Getting reports count created by the one member (and grouped by products);
+- [ ] Search reports, products and members.
+- [ ] (maybe a simple web app to demonstrate?)
