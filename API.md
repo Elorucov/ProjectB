@@ -19,6 +19,7 @@
   * [reports.edit](#reportsedit)
   * [reports.editComment](#reportseditcomment)
   * [reports.get](#reportsget)
+  * [reports.getById](#reportsgetbyid)
   * [reports.getComments](#reportsgetcomments)
   * [server.getEnumStrings](#servergetenumstrings)
   * [server.init](#serverinit)
@@ -337,6 +338,28 @@ An object with fields:
 | `members`  |  [Member](#member)[]    | _(optional)_ Array of mentioned members  |
 | `products` |  [Product](#product)[]  | _(optional)_ Array of mentioned products |
 
+## reports.getById
+This method returns a bugreport by ID.
+
+> [!NOTE]
+> If you try to get a report that is a vulnerability and is not created by the current authorized member, or that relate to a product that is not owned by the current authorized member, the server returns an error (code `15`).
+
+### Parameters
+| Name            | Type     | Description      | 
+|-----------------|----------|------------------|
+| `report_id`*    |  uint32  | ID of the report |
+
+### Response
+An object with fields:
+| Name       | Type                 | Description                                          | 
+|------------|----------------------|------------------------------------------------------|
+| `report`   |  [Report](#report)   | Report                                               |
+| `author`   |  [Member](#member)   | Info about the author of the report                  |
+| `product`  |  [Product](#product) | Info about the product for which the report was made |
+
+### Errors
+This method may return error with these codes: `11`, `15`.
+
 ## reports.getComments
 This method returns comments under a bugreport.
 
@@ -352,11 +375,11 @@ This method returns comments under a bugreport.
 
 ### Response
 An object with fields:
-| Name       | Type                    | Description                                 | 
-|------------|-------------------------|---------------------------------------------|
-| `count`    |  int32                  | Comments count                              |
-| `items`    |  [Comment](#comment)[]  | Array of comments                           |
-| `members`  |  [Member](#member)[]    | _(optional)_ An array of mentioned members  |
+| Name       | Type                    | Description                              | 
+|------------|-------------------------|------------------------------------------|
+| `count`    |  int32                  | Comments count                           |
+| `items`    |  [Comment](#comment)[]  | Array of comments                        |
+| `members`  |  [Member](#member)[]    | _(optional)_ Array of mentioned members  |
 
 ### Errors
 This method may return error with these codes: `11`, `15`.

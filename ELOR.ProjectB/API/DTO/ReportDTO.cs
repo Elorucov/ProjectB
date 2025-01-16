@@ -13,4 +13,16 @@
         public string Actual { get; init; }
         public string Expected { get; init; }
     }
+
+    public class ReportsList : APIListWithMembers<ReportDTO> {
+        public ReportsList(List<ReportDTO> items, int count) : base(items, count) { }
+
+        public List<ProductDTO> Products { get; init; }
+    }
+
+    public class SingleReportResponseDTO {
+        public ReportDTO Report { get; init; }
+        public MemberDTO Author { get; init; }
+        public ProductDTO Product { get; init; }
+    }
 }

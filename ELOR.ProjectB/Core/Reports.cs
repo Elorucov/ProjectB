@@ -2,7 +2,9 @@
 using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
+using System.ComponentModel.Design;
 using System.Data.Common;
+using static Mysqlx.Error.Types;
 
 namespace ELOR.ProjectB.Core {
     public static class Reports {
@@ -133,6 +135,35 @@ namespace ELOR.ProjectB.Core {
             }
         }
 
+        private static ReportDTO ReadToReportDTO(DbDataReader resp, bool extended) {
+            uint reportId = (uint)resp.GetDecimal(0);
+            uint productId = (uint)resp.GetDecimal(1);
+            uint creatorId = (uint)resp.GetDecimal(2);
+            long creationTime = (long)resp.GetDecimal(3);
+            string title = resp.GetString(4);
+            string steps = extended ? resp.GetString(5) : null;
+            string actual = extended ? resp.GetString(6) : null;
+            string expected = extended ? resp.GetString(7) : null;
+            byte severity = resp.GetByte(extended ? 8 : 5);
+            byte problemType = resp.GetByte(extended ? 9 : 6);
+            byte status = resp.GetByte(extended ? 10 : 7);
+            long? updatedTime = resp.IsDBNull(extended ? 12 : 8) ? null : (long)resp.GetDecimal(extended ? 12 : 8);
+            return new ReportDTO {
+                Id = reportId,
+                ProductId = productId,
+                CreatorId = creatorId,
+                Created = creationTime,
+                Updated = updatedTime,
+                Title = title,
+                Steps = steps,
+                Actual = actual,
+                Expected = expected,
+                Severity = StaticValues.SeverityList.ToAPIObject(severity, extended),
+                ProblemType = StaticValues.ProblemTypesList.ToAPIObject(problemType, extended),
+                Status = StaticValues.BugreportStatuses.ToAPIObject(status, extended)
+            };
+        }
+
         public static async Task<Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>> GetAsync(uint authorizedMemberId, uint creatorId, uint productId, byte severity, byte problemType, byte status, bool extended) {
             bool dontGetVulnerabilities = severity == 0 && authorizedMemberId != creatorId;
 
@@ -165,34 +196,10 @@ namespace ELOR.ProjectB.Core {
             List<MemberDTO> members = null;
             if (resp.HasRows) {
                 while (resp.Read()) {
-                    uint reportId = (uint)resp.GetDecimal(0);
-                    uint productId2 = (uint)resp.GetDecimal(1);
-                    uint creatorId2 = (uint)resp.GetDecimal(2);
-                    long creationTime = (long)resp.GetDecimal(3);
-                    string title = resp.GetString(4);
-                    string steps = extended ? resp.GetString(5) : null;
-                    string actual = extended ? resp.GetString(6) : null;
-                    string expected = extended ? resp.GetString(7) : null;
-                    byte severity2 = resp.GetByte(extended ? 8 : 5);
-                    byte problemType2 = resp.GetByte(extended ? 9 : 6);
-                    byte status2 = resp.GetByte(extended ? 10 : 7);
-                    long? updatedTime = resp.IsDBNull(extended ? 12 : 8) ? null : (long)resp.GetDecimal(extended ? 12 : 8);
-                    reports.Add(new ReportDTO {
-                        Id = reportId,
-                        ProductId = productId2,
-                        CreatorId = creatorId2,
-                        Created = creationTime,
-                        Updated = updatedTime,
-                        Title = title,
-                        Steps = steps,
-                        Actual = actual,
-                        Expected = expected,
-                        Severity = StaticValues.SeverityList.ToAPIObject(severity2, extended),
-                        ProblemType = StaticValues.ProblemTypesList.ToAPIObject(problemType2, extended),
-                        Status = StaticValues.BugreportStatuses.ToAPIObject(status2, extended)
-                    });
-                    if (extended && !mids.Contains(creatorId2)) mids.Add(creatorId2);
-                    if (extended && !pids.Contains(productId2)) pids.Add(productId2);
+                    var report = ReadToReportDTO(resp, extended);
+                    reports.Add(ReadToReportDTO(resp, extended));
+                    if (extended && !mids.Contains(report.CreatorId)) mids.Add(report.CreatorId);
+                    if (extended && !pids.Contains(report.ProductId)) pids.Add(report.ProductId);
                 }
                 resp.Close();
                 if (extended && mids.Count > 0) members = await Members.GetByIdAsync(mids);
@@ -200,6 +207,34 @@ namespace ELOR.ProjectB.Core {
             }
             await resp.DisposeAsync();
             return new Tuple<List<ReportDTO>, List<ProductDTO>, List<MemberDTO>>(reports, products, members);
+        }
+
+        public static async Task<Tuple<ReportDTO, ProductDTO, MemberDTO>> GetByIdAsync(uint authorizedMemberId, uint reportId) {
+            string sql = "CALL getSingleReport(@mid, @rid)";
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", authorizedMemberId);
+            cmd1.Parameters.AddWithValue("@rid", reportId);
+            DbDataReader resp = await cmd1.ExecuteReaderAsync();
+            cmd1.Dispose();
+
+            ReportDTO report = null;
+            List<uint> mids = new List<uint>();
+            uint pid = 0;
+            List<ProductDTO> products = null;
+            List<MemberDTO> members = null;
+            if (resp.HasRows) {
+                while (resp.Read()) {
+                    report = ReadToReportDTO(resp, true);
+                    if (!mids.Contains(report.CreatorId)) mids.Add(report.CreatorId);
+                    pid = report.ProductId;
+                    break; // because we need 1 row.
+                }
+                resp.Close();
+                if (mids.Count > 0) members = await Members.GetByIdAsync(mids);
+                if (pid > 0) products = await Products.GetByIdAsync(new List<uint> { pid });
+            }
+            await resp.DisposeAsync();
+            return new Tuple<ReportDTO, ProductDTO, MemberDTO>(report, products.FirstOrDefault(), members.FirstOrDefault());
         }
 
         public static async Task<Tuple<List<ReportCommentDTO>, List<MemberDTO>>> GetCommentsAsync(uint authorizedMemberId, uint reportId, bool extended) {

@@ -32,6 +32,7 @@ namespace ELOR.ProjectB.API {
             app.Map("/reports.edit", ReportsAPI.EditAsync);
             app.Map("/reports.editComment", ReportsAPI.EditCommentAsync);
             app.Map("/reports.get", ReportsAPI.GetAsync);
+            app.Map("/reports.getById", ReportsAPI.GetByIdAsync);
             app.Map("/reports.getComments", ReportsAPI.GetCommentsAsync);
 
             app.Map("/server.getEnumStrings", ServerAPI.GetEnums);

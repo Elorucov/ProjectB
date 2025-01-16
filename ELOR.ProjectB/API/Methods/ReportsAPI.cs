@@ -116,6 +116,25 @@ namespace ELOR.ProjectB.API.Methods {
             return Results.Json(response);
         }
 
+        public static async Task<IResult> GetByIdAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint reportId = request.ValidateAndGetUIntValue("report_id");
+
+            var data = await Reports.GetByIdAsync(mid, reportId);
+            var report = data.Item1;
+            var product = data.Item2;
+            var author = data.Item3;
+
+            var response = new APIResponse<SingleReportResponseDTO>(new SingleReportResponseDTO {
+                Report = report,
+                Product = product,
+                Author = author
+            });
+
+            return Results.Json(response);
+        }
+
         public static async Task<IResult> GetCommentsAsync(HttpRequest request) {
             uint mid = request.EnsureAuthorized();
 
