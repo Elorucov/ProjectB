@@ -21,6 +21,7 @@
   * [reports.get](#reportsget)
   * [reports.getComments](#reportsgetcomments)
   * [server.getEnumStrings](#servergetenumstrings)
+  * [server.init](#serverinit)
 * [API objects](#api-objects)
   * [Basic](#basic)
     * [EnumInfo](#enuminfo)
@@ -38,7 +39,7 @@
 
 ## Request syntax
 
-To call an API method you need to make a POST or GET request to the specified URL using HTTPS protocol:
+To call an API method you need to make a POST or GET request to the specified URL:
 
 > **HOST**`/`**METHOD_NAME**`?`**PARAMETERS**
 
