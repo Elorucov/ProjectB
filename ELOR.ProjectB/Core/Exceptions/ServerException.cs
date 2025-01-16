@@ -31,9 +31,9 @@ namespace ELOR.ProjectB.Core.Exceptions {
             { 15, "Access denied" },
             { 16, "Permission to perform this action is denied" },
             { 20, "Testing of this product is over" },
-            { 40, "Can't change the report status to a value you passed" },
+            { 40, "Can't change the report status to the value you passed" },
             { 41, "This status requires a comment" },
-            { 42, "Can't change the report severity to a value you passed" },
+            { 42, "Can't change the report severity to the value you passed" },
             { 43, "You can no longer edit the report" },
             { 44, "You can't delete the report" },
         });

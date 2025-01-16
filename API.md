@@ -38,7 +38,7 @@
 
 ## Request syntax
 
-To call a API method you need to make POST or GET request to the specified URL using HTTPS protocol:
+To call an API method you need to make a POST or GET request to the specified URL using HTTPS protocol:
 
 > **HOST**`/`**METHOD_NAME**`?`**PARAMETERS**
 
@@ -46,9 +46,9 @@ To call a API method you need to make POST or GET request to the specified URL u
 
 **METHOD_NAME** — method name from the list of [API functions](#api-methods).
 
-**PARAMETERS** — parameters of the corresponding API method. You can send parameters as query, or in request body as `x-www-form-urlencoded` or `form-data` format.
+**PARAMETERS** — parameters of the corresponding API method. You can send parameters as URL query, or in request body as `x-www-form-urlencoded` or `form-data` format.
 
-API methods named as `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method).
+API methods named in `section.method` format, just like [Telegram API](https://core.telegram.org/methods) or [VK API](https://dev.vk.com/en/method).
 
 Example of the request:
 ```
@@ -57,11 +57,11 @@ http://localhost:7575/auth.signIn?login=myusername&password=mypassword
 
 ## Authorization
 
-To run all API methods (except from `auth` section) you need to pass an `access_token`, a special access key, in the `Authorization` header:
+To run all API methods (except from `auth` section) you need to pass an `access_token`, which is a special access key, in the `Authorization` header:
 ```
 Authorization: Bearer 1HxcvP819mtJdPmRtPOwi0SXEFVnVk9ZRYtVE3fgIyEBofUwIStm8xMTMdd3sTAUk5av7KSUyvCEZHmCwlvcqPbyVPkjsuFuPqXi3EthMKmRFvpe8ut2E5WXksywEiuzVv7l4JG3Rs8M3HPeCQ9sBN
 ```
-Token is a string of digits and latin characters and may refer to a bug tracker's member. If you don't pass the `Authorization` header, the server will return a error (code `5`). You can obtain a token by calling the `auth.signIn` method.
+Token is a string of digits and latin characters and may refer to the bug tracker's member. If you don't pass the `Authorization` header, the server will return an error (code `5`). You can obtain a token by calling the `auth.signIn` method.
 
 ## Response format
 
@@ -91,22 +91,22 @@ Example of an error response:
 **ProjectB** has API methods described below.
 
 > [!NOTE]
-> Parameters marked with an asterisk is mandatory. If the client does not send these parameters, the server will return an error (code `10`).
+> Parameters marked with an asterisk are mandatory. If the client does not send these parameters, the server will return an error (code `10`).
 
 ## auth.signIn
 This method authorizes the member. 
 
 ### Parameters
-| Name        | Type     | Description                    | 
-|-------------|----------|--------------------------------|
-| `login` *   |  string  | A member's user name           |
-| `password`* |  string  | A password                     |
+| Name        | Type     | Description                  | 
+|-------------|----------|------------------------------|
+| `login` *   |  string  | Member's user name           |
+| `password`* |  string  | Password                     |
 
 ### Response
 An object with fields:
 | Name          | Type     | Description                                                                        | 
 |---------------|----------|------------------------------------------------------------------------------------|
-| `memberId`    |  uint32  | An authorized member's ID                                                          |
+| `memberId`    |  uint32  | Authorized member's ID                                                             |
 | `accessToken` |  string  | An access token that must be sent to API methods in the `Authorization` header     |
 | `expiresIn`   |  uint32  | Token lifetime in seconds                                                          |
 
@@ -117,30 +117,30 @@ This method may return an error `4`.
 This method registers a new member in bug tracker via invite code.
 
 ### Parameters
-| Name            | Type     | Description                                               | 
-|-----------------|----------|-----------------------------------------------------------|
-| `invite_code`*  |  string  | An invite code                                            |
-| `password`*     |  string  | A password. It's length must be >= 6                      |
-| `first_name`*   |  string  | A member's name. It's length must be >= 2 and <= 50       |
-| `last_name`*    |  string  | A member's surname. It's length must be >= 2 and <= 50    |
+| Name            | Type     | Description                                            | 
+|-----------------|----------|--------------------------------------------------------|
+| `invite_code`*  |  string  | Invite code                                            |
+| `password`*     |  string  | Password. Its length must be >= 6                      |
+| `first_name`*   |  string  | Member's name. Its length must be >= 2 and <= 50       |
+| `last_name`*    |  string  | Member's surname. Its length must be >= 2 and <= 50    |
 
 ### Response
 An object with fields:
-| Name       | Type     | Description                                      | 
-|------------|----------|--------------------------------------------------|
-| `memberId` |  uint32  | An unique ID for new member                      |
-| `login`    |  string  | A member's login, which is also the user name    |
+| Name       | Type     | Description                                    | 
+|------------|----------|------------------------------------------------|
+| `memberId` |  uint32  | Unique ID for new member                       |
+| `login`    |  string  | Member's login, which is also the user name    |
 
 ### Errors
 This method may return an error `11`.
 
 ## invites.create
-This method creates an invitation to register new member in bug tracker.
+This method creates an invitation to register a new member in bug tracker.
 
 ### Parameters
-| Name         | Type     | Description                                                           | 
-|--------------|----------|-----------------------------------------------------------------------|
-| `user_name`* |  string  | A new member's username and login. It's length must be >= 2 and <= 32 |
+| Name         | Type     | Description                                                        | 
+|--------------|----------|--------------------------------------------------------------------|
+| `user_name`* |  string  | New member's username and login. Its length must be >= 2 and <= 32 |
 
 ### Response
 An invite code. ( string )
@@ -152,12 +152,12 @@ This method may return an error `12`.
 This method creates a product.
 
 ### Parameters
-| Name     | Type     | Description                                              | 
-|----------|----------|----------------------------------------------------------|
-| `name`*  |  string  | A new product's name. It's length must be >= 2 and <= 64 |
+| Name     | Type     | Description                                           | 
+|----------|----------|-------------------------------------------------------|
+| `name`*  |  string  | New product's name. Its length must be >= 2 and <= 64 |
 
 ### Response
-An ID of created product (`uint32`)
+ID of the created product (`uint32`)
 
 ## products.get
 This method returns products.
@@ -165,31 +165,31 @@ This method returns products.
 ### Parameters
 | Name       | Type   | Description                                                                          | 
 |------------|--------|--------------------------------------------------------------------------------------|
-| `filter`   |  byte  | `1` — returns all products.<br>`2` — returns only unfinished ones.<br>By default `1` |
+| `filter`   |  byte  | `1` — returns all products.<br>`2` — returns only unfinished ones.<br>Default: `1`   |
 | `owned`    |  byte  | `1` — returns only those products created by the current authorized member           |
 | `extended` |  byte  | `1` — to return mentioned members array                                              |
 
 ### Response
 An object with fields:
-| Name      | Type                    | Description                                | 
-|-----------|-------------------------|--------------------------------------------|
-| `count`   |  int32                  | Products count                             |
-| `items`   |  [Product](#product)[]  | An array of products                       |
-| `members` |  [Member](#member)[]    | _(optional)_ An array of mentioned members |
+| Name      | Type                    | Description                             | 
+|-----------|-------------------------|-----------------------------------------|
+| `count`   |  int32                  | Products count                          |
+| `items`   |  [Product](#product)[]  | Array of products                       |
+| `members` |  [Member](#member)[]    | _(optional)_ Array of mentioned members |
 
 ## products.setAsFinished
 This method completes the product testing.
 
 ### Parameters
-| Name          | Type     | Description          | 
-|---------------|----------|----------------------|
-| `product_id`* |  uint32  | An ID of the product |
+| Name          | Type     | Description       | 
+|---------------|----------|-------------------|
+| `product_id`* |  uint32  | ID of the product |
 
 ### Response
-If authorized member is a owner of the product, the method will return `true`.
+If authorized member is an owner of the product, the method will return `true`.
 
 ### Errors
-If authorized member is not a owner of the product, the method will return an error `16`.<br>If the member pass an ID of non-existent product, the server will return an error `11`.
+If authorized member is not an owner of the product, the method will return an error `16`.<br>If the member will pass an ID of a non-existent product, the server will return an error `11`.
 
 ## reports.changeSeverity
 This method changes the severity for the bugreport.
@@ -198,14 +198,14 @@ This method changes the severity for the bugreport.
 > Once the product owner has changed the severity, the report author will no longer be able to change it.
 
 ### Parameters
-| Name          | Type     | Description               | 
-|---------------|----------|---------------------------|
-| `report_id`*  |  uint32  | An ID of the report       |
-| `severity`*   |  byte    | The severity ID to assign |
-| `comment`     |  string  | A comment.                |
+| Name          | Type     | Description             | 
+|---------------|----------|-------------------------|
+| `report_id`*  |  uint32  | ID of the report        |
+| `severity`*   |  byte    | Severity ID to assign   |
+| `comment`     |  string  | Comment.                |
 
 ### Response
-An ID of the created comment (`uint32`).
+ID of the created comment (`uint32`).
 
 ### Errors
 This method may return error with these codes: `11`, `16`, `42`, `43`.
@@ -214,14 +214,14 @@ This method may return error with these codes: `11`, `16`, `42`, `43`.
 This method changes the status for the bugreport.
 
 ### Parameters
-| Name          | Type     | Description                                                                | 
-|---------------|----------|----------------------------------------------------------------------------|
-| `report_id`*  |  uint32  | An ID of the report                                                        |
-| `status`*     |  byte    | The [status](#report-statuses) ID to assign                                |
-| `comment`     |  string  | A comment. May be mandatory depends of status                              |
+| Name          | Type     | Description                                  | 
+|---------------|----------|----------------------------------------------|
+| `report_id`*  |  uint32  | ID of the report                             |
+| `status`*     |  byte    | [Status](#report-statuses) ID to assign      |
+| `comment`     |  string  | Comment. May be mandatory, depends on status |
 
 ### Response
-An ID of the created comment (`uint32`).
+ID of the created comment (`uint32`).
 
 ### Errors
 This method may return error with these codes: `11`, `16`, `40`, `41`.
@@ -230,34 +230,34 @@ This method may return error with these codes: `11`, `16`, `40`, `41`.
 This method creates a new bug report for the product.
 
 ### Parameters
-| Name            | Type     | Description                                                                | 
-|-----------------|----------|----------------------------------------------------------------------------|
-| `product_id`*   |  uint32  | An ID of the product                                                       |
-| `title`*        |  string  | Report title — short description of the bug. It's length must be <= 128    |
-| `steps`*        |  string  | Steps to reproduce the bug. It's length must be <= 4096                    |
-| `actual`*       |  string  | Actual behavior. It's length must be <= 2048                               |
-| `expected`*     |  string  | Expected behavior. It's length must be <= 2048                             |
-| `severity`*     |  byte    | A bug's [severity](#severity)                                              |
-| `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                     |
+| Name            | Type     | Description                                                             | 
+|-----------------|----------|-------------------------------------------------------------------------|
+| `product_id`*   |  uint32  | ID of the product                                                       |
+| `title`*        |  string  | Report title — short description of the bug. Its length must be <= 128  |
+| `steps`*        |  string  | Steps to reproduce the bug. Its length must be <= 4096                  |
+| `actual`*       |  string  | Actual behavior. Its length must be <= 2048                             |
+| `expected`*     |  string  | Expected behavior. Its length must be <= 2048                           |
+| `severity`*     |  byte    | Bug's [severity](#severity)                                             |
+| `problem_type`* |  byte    | Bug's [problem type](#problem-types)                                    |
 
 ### Response
-An ID of the created report (`uint32`).
+ID of the created report (`uint32`).
 
 ### Errors
-If client pass an ID of product whose testing has been finished, the server will return an error `20`.
+If client will pass an ID of product whose testing has been finished, the server will return an error `20`.
 
 ## reports.createComment
 This method creates a comment to the bugreport
 
 ### Parameters
-| Name            | Type     | Description                                               | 
-|-----------------|----------|-----------------------------------------------------------|
-| `report_id`*    |  uint32  | An ID of the report for which a comment should be created |
-| `comment`*      |  string  | A comment. It's length must be <= 1024                    |
+| Name            | Type     | Description                                              | 
+|-----------------|----------|----------------------------------------------------------|
+| `report_id`*    |  uint32  | ID of the report for which the comment should be created |
+| `comment`*      |  string  | Comment. Its length must be <= 1024                      |
 
 
 ### Response
-An ID of the created comment (`uint32`).
+ID of the created comment (`uint32`).
 
 ### Errors
 This method may return error with these codes: `11`, `16`.
@@ -266,9 +266,9 @@ This method may return error with these codes: `11`, `16`.
 This method deletes the bugreport.
 
 ### Parameters
-| Name          | Type     | Description                                                                | 
-|---------------|----------|----------------------------------------------------------------------------|
-| `report_id`*  |  uint32  | An ID of the report                                                        |
+| Name          | Type     | Description                    | 
+|---------------|----------|--------------------------------|
+| `report_id`*  |  uint32  | ID of the report               |
 
 ### Response
 `true`, if success.
@@ -280,14 +280,14 @@ This method may return error with these codes: `11`, `16`, `44`.
 This method edits the bugreport.
 
 ### Parameters
-| Name            | Type     | Description                                                                | 
-|-----------------|----------|----------------------------------------------------------------------------|
-| `report_id`*    |  uint32  | An ID of the report to be edited                                           |
-| `title`*        |  string  | Report title — short description of the bug. It's length must be <= 128    |
-| `steps`*        |  string  | Steps to reproduce the bug. It's length must be <= 4096                    |
-| `actual`*       |  string  | Actual behavior. It's length must be <= 2048                               |
-| `expected`*     |  string  | Expected behavior. It's length must be <= 2048                             |
-| `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                     |
+| Name            | Type     | Description                                                               | 
+|-----------------|----------|---------------------------------------------------------------------------|
+| `report_id`*    |  uint32  | ID of the report to be edited                                             |
+| `title`*        |  string  | Report title — short description of the bug. Its length must be <= 128    |
+| `steps`*        |  string  | Steps to reproduce the bug. Its length must be <= 4096                    |
+| `actual`*       |  string  | Actual behavior. Its length must be <= 2048                               |
+| `expected`*     |  string  | Expected behavior. Its length must be <= 2048                             |
+| `problem_type`* |  byte    | A bug's [problem type](#problem-types)                                    |
 
 ### Response
 `true`, if success.
@@ -299,10 +299,10 @@ This method may return error with these codes: `11`, `16`, `43`.
 This method edits a comment to the bugreport
 
 ### Parameters
-| Name            | Type     | Description                                               | 
-|-----------------|----------|-----------------------------------------------------------|
-| `comment_id`*   |  uint32  | An ID of the comment to be edited                         |
-| `comment`*      |  string  | A comment. It's length must be <= 1024                    |
+| Name            | Type     | Description                           | 
+|-----------------|----------|---------------------------------------|
+| `comment_id`*   |  uint32  | ID of the comment to be edited        |
+| `comment`*      |  string  | Comment. It's length must be <= 1024  |
 
 
 ### Response
@@ -329,24 +329,24 @@ This method returns bugreports.
 
 ### Response
 An object with fields:
-| Name       | Type                    | Description                                 | 
-|------------|-------------------------|---------------------------------------------|
-| `count`    |  int32                  | Reports count                               |
-| `items`    |  [Report](#report)[]    | An array of reports                         |
-| `members`  |  [Member](#member)[]    | _(optional)_ An array of mentioned members  |
-| `products` |  [Product](#product)[]  | _(optional)_ An array of mentioned products |
+| Name       | Type                    | Description                              | 
+|------------|-------------------------|------------------------------------------|
+| `count`    |  int32                  | Reports count                            |
+| `items`    |  [Report](#report)[]    | Array of reports                         |
+| `members`  |  [Member](#member)[]    | _(optional)_ Array of mentioned members  |
+| `products` |  [Product](#product)[]  | _(optional)_ Array of mentioned products |
 
 ## reports.getComments
-This method returns comments for the bugreport.
+This method returns comments under a bugreport.
 
 > [!NOTE]
-> If you try to get comments for the report that is a vulnerability and are not created by the current authorized member, or that relate to a product that is not owned by the current authorized member, the server returns an error (code `15`).
+> If you try to get comments for a report that is a vulnerability and is not created by the current authorized member, or that relate to a product that is not owned by the current authorized member, the server returns an error (code `15`).
 
 ### Parameters
-| Name            | Type     | Description                                                | 
-|-----------------|----------|------------------------------------------------------------|
-| `report_id`*    |  uint32  | An ID of the report for which comments should be retrieved |
-| `extended`      |  byte    | `1` — to return mentioned members array                    |
+| Name            | Type     | Description                                             | 
+|-----------------|----------|---------------------------------------------------------|
+| `report_id`*    |  uint32  | ID of the report for which comments should be retrieved |
+| `extended`      |  byte    | `1` — to return mentioned members array                 |
 
 
 ### Response
@@ -354,7 +354,7 @@ An object with fields:
 | Name       | Type                    | Description                                 | 
 |------------|-------------------------|---------------------------------------------|
 | `count`    |  int32                  | Comments count                              |
-| `items`    |  [Comment](#comment)[]  | An array of comments                        |
+| `items`    |  [Comment](#comment)[]  | Array of comments                           |
 | `members`  |  [Member](#member)[]    | _(optional)_ An array of mentioned members  |
 
 ### Errors
@@ -389,56 +389,56 @@ Doesn't have
 
 ### EnumInfo
 This object type is used to describe human readable [enum](#enums) values to the client.
-| Name          | Type     | Description                              | 
-|---------------|----------|------------------------------------------|
-| `id`          |  byte    | Enum value                               |
-| `name`        |  string  | Meaning                                  |
-| `description` |  string  | _(optional)_ Description                 |
-| `supported`   |  bool    | Can client use this enum in API requests |
+| Name          | Type     | Description                                               | 
+|---------------|----------|-----------------------------------------------------------|
+| `id`          |  byte    | Enum value                                                |
+| `name`        |  string  | Meaning                                                   |
+| `description` |  string  | _(optional)_ Description                                  |
+| `supported`   |  bool    | Describes if the client can use this enum in API requests |
 
 ### Member
-| Name         | Type     | Description                  | 
-|--------------|----------|------------------------------|
-| `id`         |  uint32  | A member's unique ID         |
-| `userName`   |  string  | A member's user name (login) |
-| `firstName`  |  string  | A member's name              |
-| `lastName`   |  string  | A member's last name         |
+| Name         | Type     | Description                | 
+|--------------|----------|----------------------------|
+| `id`         |  uint32  | Member's unique ID         |
+| `userName`   |  string  | Member's user name (login) |
+| `firstName`  |  string  | Member's name              |
+| `lastName`   |  string  | Member's last name         |
 
 ### Product
-| Name         | Type     | Description                                              | 
-|--------------|----------|----------------------------------------------------------|
-| `id`         |  uint32  | A product's unique ID                                    |
-| `ownerId`    |  uint32  | An ID of member who created the product                  |
-| `name`       |  string  | A name of the product                                    |
-| `isFinished` |  bool    | Indicates that testing this product has been finished    |
+| Name         | Type     | Description                                               | 
+|--------------|----------|-----------------------------------------------------------|
+| `id`         |  uint32  | Product's unique ID                                       |
+| `ownerId`    |  uint32  | ID of member who created the product                      |
+| `name`       |  string  | Name of the product                                       |
+| `isFinished` |  bool    | Indicates that testing has been finished for this product |
 
 ### Report
-| Name           | Type                    | Description                                                   | 
-|----------------|-------------------------|---------------------------------------------------------------|
-| `id`           |  uint32                 | A report's unique ID                                          |
-| `productId`    |  uint32                 | An ID of the product the report belongs to                    |
-| `creatorId`    |  uint32                 | An ID of member who created the report                        |
-| `created`      |  int64                  | Creation time (unixtime)                                      |
-| `updated`      |  int64?                 | Report update time (unixtime). May not exist                  |
-| `severity`     |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#severity)          |
-| `problemType`  |  [EnumInfo](#enuminfo)  | An object describing the bug's [problem type](#problem-types) |
-| `status`       |  [EnumInfo](#enuminfo)  | An object describing the report [status](#report-statuses)    |
-| `title`        |  string                 | Report title — short description of the bug.                  |
-| `steps`        |  string                 | _(optional)_ Steps to reproduce the bug.                      |
-| `actual`       |  string                 | _(optional)_ Actual behavior.                                 |
-| `expected`     |  string                 | _(optional)_ Expected behavior.                               |
+| Name           | Type                    | Description                                                | 
+|----------------|-------------------------|------------------------------------------------------------|
+| `id`           |  uint32                 | Report's unique ID                                         |
+| `productId`    |  uint32                 | ID of the product the report belongs to                    |
+| `creatorId`    |  uint32                 | ID of member who created the report                        |
+| `created`      |  int64                  | Creation time (unixtime)                                   |
+| `updated`      |  int64?                 | Report update time (unixtime). _Optional_                  |
+| `severity`     |  [EnumInfo](#enuminfo)  | Object describing the bug's [severity](#severity)          |
+| `problemType`  |  [EnumInfo](#enuminfo)  | Object describing the bug's [problem type](#problem-types) |
+| `status`       |  [EnumInfo](#enuminfo)  | Object describing the report [status](#report-statuses)    |
+| `title`        |  string                 | Report title — short description of the bug.               |
+| `steps`        |  string                 | _(optional)_ Steps to reproduce the bug.                   |
+| `actual`       |  string                 | _(optional)_ Actual behavior.                              |
+| `expected`     |  string                 | _(optional)_ Expected behavior.                            |
 
 ### Comment
-| Name           | Type                    | Description                                                               | 
-|----------------|-------------------------|---------------------------------------------------------------------------|
-| `id`           |  uint32                 | A comment's unique ID                                                     |
-| `reportId`     |  uint32                 | An ID of the report to which the comment was made                         |
-| `creatorId`    |  uint32                 | An ID of member who created the comment                                   |
-| `created`      |  int64                  | Creation time (unixtime)                                                  |
-| `updated`      |  int64?                 | Comment edit time (unixtime). May not exist                               |
-| `comment`      |  string                 | A comment itself. May not exist                                           |
-| `newSeverity`  |  [EnumInfo](#enuminfo)  | An object describing the bug's [severity](#severity). May not exist       |
-| `newStatus`    |  [EnumInfo](#enuminfo)  | An object describing the report [status](#report-statuses). May not exist |
+| Name           | Type                    | Description                                                            | 
+|----------------|-------------------------|------------------------------------------------------------------------|
+| `id`           |  uint32                 | Comment's unique ID                                                    |
+| `reportId`     |  uint32                 | ID of the report to which the comment was made                         |
+| `creatorId`    |  uint32                 | ID of member who created the comment                                   |
+| `created`      |  int64                  | Creation time (unixtime)                                               |
+| `updated`      |  int64?                 | Comment edit time (unixtime). _Optional_                               |
+| `comment`      |  string                 | The comment itself. _Optional_                                         |
+| `newSeverity`  |  [EnumInfo](#enuminfo)  | Object describing the bug's [severity](#severity). _Optional_          |
+| `newStatus`    |  [EnumInfo](#enuminfo)  | Object describing the report [status](#report-statuses). _Optional_    |
 
 ## Enums
 The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.
@@ -450,7 +450,7 @@ The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.
 | `2`   | Medium        | The bug doesn't critically affect the product but causes a major inconvenience. The feature doesn't work correctly, but there is a workaround. | true      |
 | `3`   | High          | A feature isn't working properly or at all. For example, messages can't be sent, or photos can't be deleted.                                   | true      |
 | `4`   | Critical      | Bugs that inhibit any further work from the app or further testing; crashes, freezing, loss of or damage to user data.                         | true      |
-| `5`   | Vulnerability | Such reports visible only for the report creator and the product owner.                                                                        | true      |
+| `5`   | Vulnerability | Such reports are visible only to the report creator and the product owner.                                                                     | true      |
 
 ### Problem types
 | ID    | Name                    | Description                                                                                           | Supported |
@@ -487,21 +487,21 @@ The data below is stored in the `ELOR.ProjectB/API/DTO/StaticValues.cs` file.
 ## Errors
 The data below is stored in the `ELOR.ProjectB/Core/Exceptions/ServerException.cs` file.
 
-| Code  |  Message                                                                                                                                                                     | 
-|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `1`   |  `Internal server error`<br>Returned if an unknown error occurred in the server. The `message` may contain additional information about the error.                           |
-| `2`   |  `Not implemented`<br>Returned if you call an API method that not ready to use.                                                                                              |
-| `3`   |  `Unknown method passed`<br>Returned if you call an non-existent API method.                                                                                                 |
-| `4`   |  `Login or password is incorrect`                                                                                                                                            |
-| `5`   |  `Member authorization failed`<br>Returned if the client did not pass the `Authorization` header, or if the access token is invalid.                                         |
-| `10`  |  `One of the parameters specified was missing or invalid`<br>Returned if the client does not send required/mandatory parameters, or if value of these parameters is invalid. |
-| `11`  |  `Not found`<br>Returned if the DB does not contains requested item.                                                                                                         |
-| `12`  |  `Already exist`                                                                                                                                                             |
-| `15`  |  `Access denied`                                                                                                                                                             |
-| `16`  |  `Permission to perform this action is denied`                                                                                                                               |
-| `20`  |  `Testing of this product is over`                                                                                                                                           |
-| `40`  |  `Can't change the report status to a value you passed`                                                                                                                      |
-| `41`  |  `This status requires a comment`                                                                                                                                            |
-| `42`  |  `Can't change the report severity to a value you passed`                                                                                                                    |
-| `43`  |  `You can no longer edit the report`                                                                                                                                         |
-| `44`  |  `You can't delete the report`                                                                                                                                               |
+| Code  |  Message                                                                                                                                                                         | 
+|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `1`   |  `Internal server error`<br>Returned if an unknown error occurred in the server. The `message` may contain additional information about the error.                               |
+| `2`   |  `Not implemented`<br>Returned if you call an API method that is not ready to use.                                                                                               |
+| `3`   |  `Unknown method passed`<br>Returned if you call a non-existent API method.                                                                                                      |
+| `4`   |  `Login or password is incorrect`                                                                                                                                                |
+| `5`   |  `Member authorization failed`<br>Returned if the client did not pass the `Authorization` header, or if the access token is invalid.                                             |
+| `10`  |  `One of the parameters specified was missing or invalid`<br>Returned if the client does not send required/mandatory parameters, or if the value of these parameters is invalid. |
+| `11`  |  `Not found`<br>Returned if the DB does not contain the requested item.                                                                                                          |
+| `12`  |  `Already exist`                                                                                                                                                                 |
+| `15`  |  `Access denied`                                                                                                                                                                 |
+| `16`  |  `Permission to perform this action is denied`                                                                                                                                   |
+| `20`  |  `Testing of this product is over`                                                                                                                                               |
+| `40`  |  `Can't change the report status to the value you passed`                                                                                                                        |
+| `41`  |  `This status requires a comment`                                                                                                                                                |
+| `42`  |  `Can't change the report severity to the value you passed`                                                                                                                      |
+| `43`  |  `You can no longer edit the report`                                                                                                                                             |
+| `44`  |  `You can't delete the report`                                                                                                                                                   |
