@@ -1,4 +1,5 @@
-﻿using ELOR.ProjectB.Core.Exceptions;
+﻿using ELOR.ProjectB.API.DTO;
+using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
 
@@ -44,6 +45,36 @@ namespace ELOR.ProjectB.Core {
                 cmd1.Dispose();
                 return code;
             }
+        }
+
+        public static async Task<List<InviteDTO>> GetInvitesAsync(uint authorizedMemberId) {
+            MySqlCommand cmd1 = new MySqlCommand(@"SELECT * FROM invites WHERE created_by = @cb;", DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@cb", authorizedMemberId);
+            var resp = await cmd1.ExecuteReaderAsync();
+
+            List<InviteDTO> invites = new List<InviteDTO>();
+            if (resp.HasRows) {
+                while (resp.Read()) {
+                    uint inviteId = (uint)resp.GetDecimal(0);
+                    string code = resp.GetString(1);
+                    string userName = resp.GetString(2);
+                    long timestamp = (long)resp.GetDecimal(3);
+                    uint creatorId = (uint)resp.GetDecimal(4);
+                    uint? invitedMemberId = resp.IsDBNull(5) ? null : (uint)resp.GetDecimal(5);
+                    if (invitedMemberId.HasValue && invitedMemberId.Value == 0) invitedMemberId = null; // todo: set nullable for column in db!
+                    if (invitedMemberId.HasValue) code = null; // ибо зачем нужен уже использованный код, а?
+                    invites.Add(new InviteDTO {
+                        Id = inviteId,
+                        CreatorId = creatorId,
+                        Created = timestamp,
+                        UserName = userName,
+                        Code = code,
+                        InvitedMemberId = invitedMemberId,
+                    });
+                }
+            }
+            resp.Close();
+            return invites;
         }
 
         // TODO: procedure

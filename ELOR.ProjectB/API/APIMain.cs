@@ -19,6 +19,7 @@ namespace ELOR.ProjectB.API {
             app.Map("/auth.signUp", AuthAPI.SignUpAsync);
 
             app.Map("/invites.create", InvitesAPI.CreateAsync);
+            app.Map("/invites.get", InvitesAPI.GetAsync);
 
             app.Map("/products.create", ProductsAPI.CreateAsync);
             app.Map("/products.get", ProductsAPI.GetAsync);

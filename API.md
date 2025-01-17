@@ -27,6 +27,7 @@
   * [Basic](#basic)
     * [EnumInfo](#enuminfo)
     * [Member](#member)
+    * [Invite](#invite)
     * [Product](#product)
     * [Report](#report)
     * [Comment](#comment)
@@ -150,6 +151,19 @@ An invite code. ( string )
 ### Errors
 This method may return an error `12`.
 
+## invites.get
+This method returns invites created by the current authorized member.
+
+### Parameters
+Doesn't have
+
+### Response
+An object with fields:
+| Name       | Type                    | Description      | 
+|------------|-------------------------|------------------|
+| `count`    |  int32                  | Invites count    |
+| `items`    |  [Invite](#invite)[]    | Array of invites |
+
 ## products.create
 This method creates a product.
 
@@ -268,9 +282,9 @@ This method may return error with these codes: `11`, `16`.
 This method deletes the bugreport.
 
 ### Parameters
-| Name          | Type     | Description                    | 
-|---------------|----------|--------------------------------|
-| `report_id`*  |  uint32  | ID of the report               |
+| Name          | Type     | Description      | 
+|---------------|----------|------------------|
+| `report_id`*  |  uint32  | ID of the report |
 
 ### Response
 `true`, if success.
@@ -427,6 +441,16 @@ This object type is used to describe human readable [enum](#enums) values to the
 | `userName`   |  string  | Member's user name (login) |
 | `firstName`  |  string  | Member's name              |
 | `lastName`   |  string  | Member's last name         |
+
+### Invite
+| Name              | Type     | Description                                                              | 
+|-------------------|----------|--------------------------------------------------------------------------|
+| `id`              |  uint32  | Invite's unique ID                                                       |
+| `creatorid`       |  uint32  | ID of member who created the invite                                      |
+| `created`         |  int64   | Creation time (unixtime)                                                 |
+| `userName`        |  string  | Invited member's username and login                                      |
+| `code`            |  string  | _(Optional)_ Invite code. Not returned if invite is used                 |
+| `invitedMemberId` |  uint32  | _(Optional)_ Invited member's ID. Not returned if invite is not used yet |
 
 ### Product
 | Name         | Type     | Description                                               | 

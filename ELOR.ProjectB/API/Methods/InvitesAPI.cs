@@ -11,5 +11,12 @@ namespace ELOR.ProjectB.API.Methods {
             string code = await Invites.CreateAsync(mid, userName);
             return Results.Json(new APIResponse<string>(code));
         }
+
+        public static async Task<IResult> GetAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            var list = await Invites.GetInvitesAsync(mid);
+            return Results.Json(new APIResponse<APIList<InviteDTO>>(new APIList<InviteDTO>(list, list.Count)));
+        }
     }
 }
