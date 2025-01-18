@@ -1,6 +1,6 @@
 # ProjectB
 
-A simple self-hosted bug tracker inspired by [VK's bug-tracker](https://vk.com/testers). Written in ASP.NET 8.
+A simple self-hosted bug tracker inspired by [VK's bug-tracker](https://vk.com/testing). Written in ASP.NET 8.
 
 The project was created as one example of a backend service in order to improve my backend, API and database experience (MySQL for now) and demonstrate it in my job search. And it took me a little over a week to develop from scratch. 😅
 
@@ -32,8 +32,8 @@ Reports with vulnerabilities are available only to the report author and the pro
 Any member can leave a **comment** to any reports except for vulnerabilities. Only the report author and the product owner can leave comments to such reports. A comment is added every time the status or priority of a report changes, but without text.
 
 ## TODO
-- [x] Getting reports count created by the one member (and grouped by products);
-- [ ] `offset`, `count` and `rev` parameters for `products.get`, `reports.get` and `reports.getComments` methods;
+- [x] Getting reports count created by the one member (done by creating the `members.getCard` method);
 - [x] Getting reports count for the one product (done by creating the `products.getCard` method);
+- [ ] `offset`, `count` and `rev` parameters for `products.get`, `reports.get` and `reports.getComments` methods;
 - [ ] Search reports, products and members.
 - [ ] (maybe a simple web app to demonstrate?)

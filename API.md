@@ -8,6 +8,7 @@
   * [auth.signIn](#authsignin)
   * [auth.signUp](#authsignup)
   * [invites.create](#invitescreate)
+  * [invites.get](#invitesget)
   * [members.getCard](#membersgetcard)
   * [products.create](#productscreate)
   * [products.get](#productsget)
