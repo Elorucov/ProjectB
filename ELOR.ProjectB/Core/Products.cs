@@ -58,8 +58,8 @@ namespace ELOR.ProjectB.Core {
             bool dontGetVulnerabilities = authorizedMemberId != creatorId;
 
             string sql = !dontGetVulnerabilities ?
-                "SELECT r.product_id, p.owner_id, p.name, p.is_finished, COUNT(r.id) AS count FROM reports r JOIN products p ON p.id = r.product_id WHERE creator_id = @mid GROUP BY product_id ORDER BY count DESC;" :
-                "SELECT r.product_id, p.owner_id, p.name, p.is_finished, COUNT(r.id) AS count FROM reports r JOIN products p ON p.id = r.product_id WHERE creator_id = @mid AND severity != 5 GROUP BY product_id ORDER BY count DESC;";
+                "SELECT r.product_id, p.owner_id, p.name, p.is_finished, COUNT(r.id) AS count FROM reports r LEFT JOIN products p ON p.id = r.product_id WHERE creator_id = @mid GROUP BY product_id ORDER BY count DESC;" :
+                "SELECT r.product_id, p.owner_id, p.name, p.is_finished, COUNT(r.id) AS count FROM reports r LEFT JOIN products p ON p.id = r.product_id WHERE creator_id = @mid AND severity != 5 GROUP BY product_id ORDER BY count DESC;";
 
             MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
             cmd1.Parameters.AddWithValue("@mid", creatorId);
@@ -85,6 +85,55 @@ namespace ELOR.ProjectB.Core {
             }
             await resp.DisposeAsync();
             return products;
+        }
+
+        public static async Task<Tuple<ProductDTO, int, int, int, int, List<MemberDTO>>> GetProductWithReportsCountersAsync(uint productId) {
+            string sql = "SELECT p.*, ";
+            sql += "COUNT(r.id) as reports_count, ";
+            sql += "COUNT(CASE WHEN r.status IN (0, 7) THEN 1 ELSE NULL END) as reports_open, ";
+            sql += "COUNT(CASE WHEN r.status IN (1, 4, 2) THEN 1 ELSE NULL END) as reports_in_process, ";
+            sql += "COUNT(CASE WHEN r.status IN (2, 11, 12, 15) THEN 1 ELSE NULL END) as reports_fixed ";
+            sql += "FROM products p ";
+            sql += "LEFT JOIN reports r ON r.product_id = p.id ";
+            sql += "WHERE p.id = @pid;";
+
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@pid", productId);
+            DbDataReader resp = await cmd1.ExecuteReaderAsync();
+            cmd1.Dispose();
+
+            ProductDTO product = null;
+            int reportsCount = 0;
+            int openReportsCount = 0;
+            int workingReportsCount = 0;
+            int fixedReportsCount = 0;
+
+            List<uint> mids = new List<uint>();
+            List<MemberDTO> members = null;
+
+            if (resp.HasRows) {
+                while (resp.Read()) {
+                    uint productId2 = (uint)resp.GetDecimal(0);
+                    uint productOwnerId = (uint)resp.GetDecimal(1);
+                    string name = resp.GetString(2);
+                    bool isFinished = resp.GetBoolean(3);
+                    product = new ProductDTO {
+                        Id = productId,
+                        OwnerId = productOwnerId,
+                        Name = name,
+                        IsFinished = isFinished
+                    };
+                    if (!mids.Contains(productOwnerId)) mids.Add(productOwnerId);
+                    if (!resp.IsDBNull(4)) reportsCount = (int)resp.GetDecimal(4);
+                    if (!resp.IsDBNull(5)) openReportsCount = (int)resp.GetDecimal(5);
+                    if (!resp.IsDBNull(6)) workingReportsCount = (int)resp.GetDecimal(6);
+                    if (!resp.IsDBNull(7)) fixedReportsCount = (int)resp.GetDecimal(7);
+                    break;
+                }
+            }
+            await resp.DisposeAsync();
+            if (mids.Count > 0) members = await Members.GetByIdAsync(mids);
+            return new Tuple<ProductDTO, int, int, int, int, List<MemberDTO>>(product, reportsCount, openReportsCount, workingReportsCount, fixedReportsCount, members);
         }
 
         public static async Task<Tuple<List<ProductDTO>, List<MemberDTO>>> GetFilteredAsync(uint ownerId, bool onlyOwned, ProductsFilter filter, bool extended) {

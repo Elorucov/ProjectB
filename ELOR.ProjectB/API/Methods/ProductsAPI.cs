@@ -26,7 +26,6 @@ namespace ELOR.ProjectB.API.Methods {
             var products = data.Item1;
             var members = data.Item2;
 
-
             object response = null;
             if (extended) {
                 response = new APIResponse<APIListWithMembers<ProductDTO>>(new APIListWithMembers<ProductDTO>(products, products.Count) { Members = members });
@@ -35,6 +34,29 @@ namespace ELOR.ProjectB.API.Methods {
             }
 
             return Results.Json(response);
+        }
+
+        public static async Task<IResult> GetCardAsync(HttpRequest request) {
+            uint mid = request.EnsureAuthorized();
+
+            uint productId = request.ValidateAndGetUIntValue("product_id");
+
+            var data = await Products.GetProductWithReportsCountersAsync(productId);
+            var product = data.Item1;
+            var count = data.Item2;
+            var openCount = data.Item3;
+            var inProcessCount = data.Item4;
+            var fixedCount = data.Item5;
+            var members = data.Item6;
+
+            return Results.Json(new APIResponse<ProductCardDTO>(new ProductCardDTO { 
+                Product = product,
+                ReportsCount = count,
+                OpenReportsCount = openCount,
+                InProcessReportsCount = inProcessCount,
+                FixedReportsCount = fixedCount,
+                Members = members
+            }));
         }
 
         public static async Task<IResult> SetAsFinishedAsync(HttpRequest request) {

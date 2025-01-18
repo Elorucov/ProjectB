@@ -33,7 +33,7 @@ Any member can leave a **comment** to any reports except for vulnerabilities. On
 
 ## TODO
 - [x] Getting reports count created by the one member (and grouped by products);
-- [ ] `offset`, `count` and `rev` parameters for `products.get`, `reports.get` and `reports.getComments`
-- [ ] Getting reports count for the one product;
+- [ ] `offset`, `count` and `rev` parameters for `products.get`, `reports.get` and `reports.getComments` methods;
+- [x] Getting reports count for the one product (done by creating the `products.getCard` method);
 - [ ] Search reports, products and members.
 - [ ] (maybe a simple web app to demonstrate?)

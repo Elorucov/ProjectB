@@ -11,6 +11,7 @@
   * [members.getCard](#membersgetcard)
   * [products.create](#productscreate)
   * [products.get](#productsget)
+  * [products.getCard](#productsgetcard)
   * [products.setAsFinished](#productssetasfinished)
   * [reports.changeSeverity](#reportschangeseverity)
   * [reports.changeStatus](#reportschangestatus)
@@ -211,6 +212,25 @@ An object with fields:
 | `count`   |  int32                  | Products count                          |
 | `items`   |  [Product](#product)[]  | Array of products                       |
 | `members` |  [Member](#member)[]    | _(optional)_ Array of mentioned members |
+
+## products.getCard
+This method returns an information about the product.
+
+### Parameters
+| Name              | Type     | Description                                         | 
+|-------------------|----------|-----------------------------------------------------|
+| `product_id`*     |  uint32  | ID of the product whose infos needs to be returned. |
+
+### Response
+An object with fields:
+| Name                     | Type                    | Description                                                      | 
+|--------------------------|-------------------------|------------------------------------------------------------------|
+| `product`                |  [Product](#product)    | A product itself                                                 |
+| `reportsCount`           |  int32                  | Number of reports for the product                                |
+| `openReportsCount`       |  int32                  | Number of open reports (status = 0 or 7)                         |
+| `inProcessReportsCount`  |  int32                  | Number of in-process reports (status = 1, 4 or 2)                |
+| `fixedReportsCount`      |  int32                  | Number of fixed reports (status = 2, 11, 12 or 15)               |
+| `members`                |  [Member](#member)[]    | Array of mentioned members (contains the creator of the product) |
 
 ## products.setAsFinished
 This method completes the product testing.
