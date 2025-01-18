@@ -3,6 +3,7 @@ using ELOR.ProjectB.Core.Exceptions;
 using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
+using System.Xml.Linq;
 
 namespace ELOR.ProjectB.Core {
     public enum ProductsFilter : byte {
@@ -49,6 +50,39 @@ namespace ELOR.ProjectB.Core {
                 }
             }
 
+            await resp.DisposeAsync();
+            return products;
+        }
+
+        public static async Task<List<Tuple<ProductDTO, int>>> GetCreatedReportCountByMemberPerProductsAsync(uint authorizedMemberId, uint creatorId) {
+            bool dontGetVulnerabilities = authorizedMemberId != creatorId;
+
+            string sql = !dontGetVulnerabilities ?
+                "SELECT r.product_id, p.owner_id, p.name, p.is_finished, COUNT(r.id) AS count FROM reports r JOIN products p ON p.id = r.product_id WHERE creator_id = @mid GROUP BY product_id ORDER BY count DESC;" :
+                "SELECT r.product_id, p.owner_id, p.name, p.is_finished, COUNT(r.id) AS count FROM reports r JOIN products p ON p.id = r.product_id WHERE creator_id = @mid AND severity != 5 GROUP BY product_id ORDER BY count DESC;";
+
+            MySqlCommand cmd1 = new MySqlCommand(sql, DBClient.Connection);
+            cmd1.Parameters.AddWithValue("@mid", creatorId);
+            DbDataReader resp = await cmd1.ExecuteReaderAsync();
+            cmd1.Dispose();
+
+            List<Tuple<ProductDTO, int>> products = new List<Tuple<ProductDTO, int>>();
+            if (resp.HasRows) {
+                while (resp.Read()) {
+                    uint productId = (uint)resp.GetDecimal(0);
+                    uint productOwnerId = (uint)resp.GetDecimal(1);
+                    string name = resp.GetString(2);
+                    bool isFinished = resp.GetBoolean(3);
+                    var product = new ProductDTO {
+                        Id = productId,
+                        OwnerId = productOwnerId,
+                        Name = name,
+                        IsFinished = isFinished
+                    };
+                    int count = resp.IsDBNull(4) ? 0 : (int)resp.GetDecimal(4);
+                    if (count > 0) products.Add(new Tuple<ProductDTO, int>(product, count));
+                }
+            }
             await resp.DisposeAsync();
             return products;
         }

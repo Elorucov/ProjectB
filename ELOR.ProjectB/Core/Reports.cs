@@ -4,6 +4,7 @@ using ELOR.ProjectB.DataBase;
 using MySql.Data.MySqlClient;
 using System.ComponentModel.Design;
 using System.Data.Common;
+using System.Xml.Linq;
 using static Mysqlx.Error.Types;
 
 namespace ELOR.ProjectB.Core {

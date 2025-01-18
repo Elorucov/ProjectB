@@ -8,6 +8,7 @@
   * [auth.signIn](#authsignin)
   * [auth.signUp](#authsignup)
   * [invites.create](#invitescreate)
+  * [members.getCard](#membersgetcard)
   * [products.create](#productscreate)
   * [products.get](#productsget)
   * [products.setAsFinished](#productssetasfinished)
@@ -163,6 +164,24 @@ An object with fields:
 |------------|-------------------------|------------------|
 | `count`    |  int32                  | Invites count    |
 | `items`    |  [Invite](#invite)[]    | Array of invites |
+
+## members.getCard
+This method returns an information about the bug tracker member.
+
+### Parameters
+| Name         | Type     | Description                                                                                 | 
+|--------------|----------|---------------------------------------------------------------------------------------------|
+| `member_id`  |  uint32  | ID of the member whose the info needs to be returned. By default — ID the authorized member |
+
+### Response
+An object with fields:
+| Name                     | Type                    | Description                                                                                              | 
+|--------------------------|-------------------------|----------------------------------------------------------------------------------------------------------|
+| `member`                 |  [Member](#member)      | A member itself                                                                                          |
+| `invitedBy`              |  uint32                 | ID of the inviting member                                                                                |
+| `invitedByUserName`      |  string                 | Username of the inviting member                                                                          |
+| `reportsCountPerProduct` |  object[]               | Number of created reports per product. Array of objects with `product_id(uint)` and `count(int)` fields. |
+| `products`               |  [Product](#product)[]  | Array of mentioned products                                                                              |
 
 ## products.create
 This method creates a product.
